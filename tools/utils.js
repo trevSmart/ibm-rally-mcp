@@ -9,6 +9,7 @@ const getRallyApi = () => rally({
 	requestOptions: {
 		headers: {
 			'X-RallyIntegrationName': 'MCP Rally Server',
+			'X-RallyIntegrationVendor': 'My company',
 			'X-RallyIntegrationVersion': '1.0.0'
 		}
 	}

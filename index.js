@@ -13,6 +13,10 @@ import getTestCases from './tools/getTestCases.js';
 import getTypeDefinition from './tools/getTypeDefinition.js';
 import createUserStoryTasks from './tools/createUserStoryTasks.js';
 import getCurrentDate from './tools/getCurrentDate.js';
+import updateTask from './tools/updateTask.js';
+import createUserStory from './tools/createUserStory.js';
+import createDefect from './tools/createDefect.js';
+import getUsers from './tools/getUsers.js';
 
 //Variable global per emmagatzemar l'ID del projecte
 let projectId;
@@ -153,6 +157,96 @@ const getCurrentDateTool = {
 	}
 };
 
+const updateTaskTool = {
+    name: 'updateTask',
+    description: 'This tool updates an existing task in Rally.',
+    inputSchema: {
+        type: 'object',
+        required: ['taskRef', 'updates'],
+        properties: {
+            taskRef: {
+                type: 'string',
+                description: 'The reference or ObjectID of the task to update.'
+            },
+            updates: {
+                type: 'object',
+                description: 'The fields to update.'
+            }
+        }
+    }
+};
+
+const createUserStoryTool = {
+    name: 'createUserStory',
+    description: 'This tool creates a new user story in Rally.',
+    inputSchema: {
+        type: 'object',
+        required: ['userStory'],
+        properties: {
+            userStory: {
+                type: 'object',
+                description: 'The user story data to create. Must include Project, Name, and Description.',
+				required: ['Project', 'Name', 'Description', 'Iteration', 'Owner'],
+                properties: {
+                    Project: {
+                        type: 'string',
+                        description: 'The project ObjectID to associate the user story with. Example: /project/12345'
+                    },
+                    Name: {
+                        type: 'string',
+                        description: 'The name of the user story. Example: "User story title"'
+                    },
+                    Description: {
+                        type: 'string',
+                        description: 'The description of the user story. Example: "User story description"'
+                    },
+                    Iteration: {
+                        type: 'string',
+                        description: 'The iteration ObjectID to associate the user story with. Example: /iteration/12345'
+                    },
+                    Owner: {
+                        type: 'string',
+                        description: 'The user ObjectID to associate the user story with. Example: /user/12345'
+                    }
+
+                }
+            }
+        }
+    }
+};
+
+const createDefectTool = {
+    name: 'createDefect',
+    description: 'This tool creates a new defect in Rally using the exact example from the documentation.',
+    inputSchema: {
+        type: 'object',
+        required: ['defect'],
+        properties: {
+            defect: {
+                type: 'object',
+                description: 'The defect data to create. Must include Name.'
+            }
+        }
+    }
+};
+
+const getUsersTool = {
+    name: 'getUsers',
+    description: 'This tool retrieves a list of users from Rally.',
+    inputSchema: {
+        type: 'object',
+        properties: {
+            query: {
+                type: 'object',
+                description: 'A JSON object for filtering users. Keys are field names and values are the values to match. For example: `{"DisplayName": "Marc Pla"}` to find a specific user by display name.',
+            }
+        },
+        annotations: {
+            readOnlyHint: true
+        }
+    }
+};
+
 const server = new Server(
 	{
 		name: 'rally-mcp',
@@ -170,6 +264,10 @@ const server = new Server(
 				getTypeDefinitionTool,
 				createUserStoryTasksTool,
 				getCurrentDateTool,
+                updateTaskTool,
+                createUserStoryTool,
+                createDefectTool,
+                getUsersTool
 			}
 		}
 	}
@@ -184,7 +282,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 		getTestCasesTool,
 		getTypeDefinitionTool,
 		createUserStoryTasksTool,
-		getCurrentDateTool
+		getCurrentDateTool,
+        updateTaskTool,
+        createUserStoryTool,
+        createDefectTool,
+        getUsersTool
 	]
 }));
 
@@ -211,7 +313,15 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
 			result = await createUserStoryTasks({...args});
 		} else if (name === 'getCurrentDate') {
 			result = await getCurrentDate();
-		} else {
+		} else if (name === 'updateTask') {
+            result = await updateTask(args);
+        } else if (name === 'createUserStory') {
+            result = await createUserStory(args);
+        } else if (name === 'createDefect') {
+            result = await createDefect(args);
+        } else if (name === 'getUsers') {
+            result = await getUsers(args);
+        } else {
 			throw new Error(`Unknown tool: ${name}`);
 		}
 
