@@ -3,6 +3,7 @@ dotenv.config();
 
 import {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import {InitializeRequestSchema} from '@modelcontextprotocol/sdk/types.js';
 
 //Tools
 import {getProjects, getProjectsTool} from './tools/getProjects.js';
@@ -20,7 +21,13 @@ import {createTestCase, createTestCaseTool} from './tools/createTestCase.js';
 import {getUsers, getUsersTool} from './tools/getUsers.js';
 import {getTestFolders, getTestFoldersTool} from './tools/getTestFolders.js';
 
-//Variable global per emmagatzemar les dades del projecte per defecte
+export const mcpServer = new McpServer({
+	name: 'rally-mcp',
+	version: '1.0.0',
+	capabilities: {logging: {}, resources: {listChanged: true}, tools: {}}
+});
+
+let client = null;
 
 export let rallyData = {
 	defaultProject: null,
@@ -33,7 +40,27 @@ export let rallyData = {
 	testFolders: []
 };
 
-const mcpServer = new McpServer({name: 'rally-mcp', version: '1.0.0', capabilities: {logging: {}, resources: {listChanged: true}, tools: {}}});
+mcpServer.server.setRequestHandler(InitializeRequestSchema, async (request) => {
+	try {
+		client = request.params;
+		return {
+			protocolVersion: '2024-11-05',
+			capabilities: {
+				logging: {},
+				resources: {listChanged: true},
+				tools: {}
+			},
+			serverInfo: {
+				name: 'rally-mcp',
+				version: '1.0.0'
+			}
+		};
+	} catch (error) {
+		console.error(`Error initializing server: ${error.message}`);
+		throw error;
+	}
+});
+
 mcpServer.registerTool('getProjects', getProjectsTool, getProjects);
 mcpServer.registerTool('getIterations', getIterationsTool, getIterations);
 mcpServer.registerTool('getUserStories', getUserStoriesTool, getUserStories);
@@ -53,11 +80,18 @@ async function startServer() {
 	try {
 		//Obtenim l'ID del projecte abans d'iniciar el servidor
 		const getProjectsResult = await getProjects({ query: { Name: process.env.RALLY_PROJECT_NAME } });
-		if (getProjectsResult.isError || !getProjectsResult.structuredContent?.length) {
+		if (getProjectsResult.isError || !getProjectsResult.structuredContent?.projects?.length) {
 			throw new Error(`Error obtenint projecte per defecte: ${getProjectsResult.content[0].text}`);
 		}
-		const defaultProject = getProjectsResult.structuredContent[0];
+		const defaultProject = getProjectsResult.structuredContent.projects[0];
 		console.error(`Projecte per defecte: ${JSON.stringify(defaultProject, null, 3)}`);
+
+		mcpServer.registerResource('rallyData', `mcp://data/all.json`, {
+			title: 'All Rally Data',
+			description: 'All data from Rally',
+			mimeType: 'application/json',
+			annotations: {audience: ['user', 'assistant'], lastModified: new Date().toISOString()}
+		},	async uri => ({	contents: [{uri: uri, text: JSON.stringify(rallyData, null, 3)}]}));
 
 		mcpServer.registerResource('defaultProject', `mcp://projects/default.json`, {
 			title: defaultProject.Name,

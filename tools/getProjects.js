@@ -1,4 +1,4 @@
-import {rallyData} from '../index.js';
+import {mcpServer, rallyData} from '../index.js';
 import {getRallyApi, queryUtils} from './utils.js';
 import {z} from 'zod';
 
@@ -6,31 +6,31 @@ export async function getProjects({query = {}}) {
 	const rallyApi = getRallyApi();
 
 	try {
-		// Comprovem si ja tenim projectes a rallyData i si coincideixen amb la consulta
-		if (rallyData.projects.length > 0) {
-			let filteredProjects = rallyData.projects;
-
-			// Apliquem els filtres de la consulta si n'hi ha
-			if (Object.keys(query).length > 0) {
-				filteredProjects = rallyData.projects.filter(project => {
-					return Object.keys(query).every(key => {
-						if (project[key] === undefined) return false;
-						return project[key] === query[key];
-					});
+		// Si hi ha filtres específics, comprovem si podem satisfer-los amb la cache
+		if (Object.keys(query).length > 0 && rallyData.projects?.length) {
+			let filteredProjects = rallyData.projects.filter(project => {
+				return Object.keys(query).every(key => {
+					if (project[key] === undefined) return false;
+					return project[key] === query[key];
 				});
-			}
+			});
 
-			// Si tenim resultats, els retornem directament
+			// Si tenim resultats que coincideixen amb els filtres, els retornem
 			if (filteredProjects.length > 0) {
-				return {
-					content: [{
-						type: 'text',
-						text: `Projectes trobats a la cache (${filteredProjects.length}):\n\n${JSON.stringify(filteredProjects, null, '\t')}`,
-					}],
-					structuredContent: filteredProjects
-				};
+						return {
+			content: [{
+				type: 'text',
+				text: `Projectes trobats a la cache (${filteredProjects.length}):\n\n${JSON.stringify(filteredProjects, null, '\t')}`,
+			}],
+			structuredContent: {
+				projects: filteredProjects
+			}
+		};
 			}
 		}
+
+		// Si no hi ha filtres (demandem tots els projectes) o no tenim dades suficients,
+		// hem d'anar a l'API per obtenir la llista completa
 
 		const queryOptions = {
 			type: 'project',
@@ -84,13 +84,16 @@ export async function getProjects({query = {}}) {
 				rallyData.projects[existingProjectIndex] = newProject;
 			}
 		});
+		mcpServer.sendResourceListChanged();
 
 		return {
 			content: [{
 				type: 'text',
-				text: `Projectes actius trobats a Rally (${projects.length}):\n\n${JSON.stringify(projects, null, '\t')}`,
+				text: `Projectes actius trobats a Rally via API (${projects.length}):\n\n${JSON.stringify(projects, null, '\t')}`,
 			}],
-			structuredContent: projects
+			structuredContent: {
+				projects: projects
+			}
 		};
 
 	} catch (error) {
@@ -108,13 +111,14 @@ export async function getProjects({query = {}}) {
 export const getProjectsTool = {
 	name: 'getProjects',
 	title: 'Get Projects',
-	description: 'This tool retrieves a list of all active projects in Broadcom Rally.',
+	description: 'This tool queries active projects in Broadcom Rally that match the provided filters. If no filters are provided, it will return all projects.',
 	inputSchema: {
 		query: z
-			.record(z.string())
-			.optional()
-			.default({})
-			.describe('A JSON object for filtering projects. Keys are field names and values are the values to match. For example: `{"Name": "CSBD"}` to get the project with the name "CSBD".')
+			.object({
+				ObjectID: z.string().optional().describe('The ObjectID of the project to get.'),
+				Name: z.string().optional().describe('The Name of the project to get.')
+			})
+			.describe('A JSON object for filtering projects. Only ObjectID and Name fields are allowed. For example: `{"Name": "CSBD"}` to get the project with the name "CSBD".')
 	},
 	annotations: {
 		readOnlyHint: true
