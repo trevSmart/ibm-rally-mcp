@@ -1,10 +1,36 @@
+import {rallyData} from '../index.js';
 import {getRallyApi, queryUtils} from './utils.js';
+import {z} from 'zod';
 
-export default async function getProjects({query = {}}) {
-	// console.error('query', query);
+export async function getProjects({query = {}}) {
 	const rallyApi = getRallyApi();
 
 	try {
+		// Comprovem si ja tenim projectes a rallyData i si coincideixen amb la consulta
+		if (rallyData.projects.length > 0) {
+			let filteredProjects = rallyData.projects;
+
+			// Apliquem els filtres de la consulta si n'hi ha
+			if (Object.keys(query).length > 0) {
+				filteredProjects = rallyData.projects.filter(project => {
+					return Object.keys(query).every(key => {
+						if (project[key] === undefined) return false;
+						return project[key] === query[key];
+					});
+				});
+			}
+
+			// Si tenim resultats, els retornem directament
+			if (filteredProjects.length > 0) {
+				return {
+					content: [{
+						type: 'text',
+						text: `Projectes trobats a la cache (${filteredProjects.length}):\n\n${JSON.stringify(filteredProjects, null, '\t')}`,
+					}],
+					structuredContent: filteredProjects
+				};
+			}
+		}
 
 		const queryOptions = {
 			type: 'project',
@@ -13,7 +39,6 @@ export default async function getProjects({query = {}}) {
 
 		if (Object.keys(query).length) {
 			const rallyQueries = Object.keys(query).map(key => queryUtils.where(key, '=', query[key]));
-
 			if (rallyQueries.length) {
 				queryOptions.query = rallyQueries.reduce((a, b) => a.and(b));
 			}
@@ -21,9 +46,7 @@ export default async function getProjects({query = {}}) {
 
 		const result = await rallyApi.query(queryOptions);
 
-		// console.error('Resultat de la consulta:', JSON.stringify(result, null, 2));
-
-		if (!result.Results || result.Results.length === 0) {
+		if (!result.Results?.length) {
 			return {
 				content: [{
 					type: 'text',
@@ -36,7 +59,9 @@ export default async function getProjects({query = {}}) {
 		const projects = result.Results.map(project => ({
 			ObjectID: project.ObjectID,
 			Name: project.Name,
-			Description: project.Description || 'Sense descripció',
+			Description: typeof project.Description === 'string'
+				? project.Description.replace(/<[^>]*>/g, '')
+				: project.Description,
 			State: project.State,
 			CreationDate: project.CreationDate,
 			LastUpdateDate: project.LastUpdateDate,
@@ -44,6 +69,21 @@ export default async function getProjects({query = {}}) {
 			Parent: project.Parent ? project.Parent._refObjectName : null,
 			ChildrenCount: project.Children ? project.Children.Count : 0
 		}));
+
+		// Afegim els nous projectes a rallyData sense duplicats
+		projects.forEach(newProject => {
+			const existingProjectIndex = rallyData.projects.findIndex(
+				existingProject => existingProject.ObjectID === newProject.ObjectID
+			);
+
+			if (existingProjectIndex === -1) {
+				// Projecte nou, l'afegim
+				rallyData.projects.push(newProject);
+			} else {
+				// Projecte existent, l'actualitzem
+				rallyData.projects[existingProjectIndex] = newProject;
+			}
+		});
 
 		return {
 			content: [{
@@ -54,7 +94,7 @@ export default async function getProjects({query = {}}) {
 		};
 
 	} catch (error) {
-		// console.error(`Error en getProjects: ${error.message}`);
+		console.error(`Error en getProjects: ${error.message}`);
 		return {
 			isError: true,
 			content: [{
@@ -67,18 +107,16 @@ export default async function getProjects({query = {}}) {
 
 export const getProjectsTool = {
 	name: 'getProjects',
+	title: 'Get Projects',
 	description: 'This tool retrieves a list of all active projects in Broadcom Rally.',
 	inputSchema: {
-		type: 'object',
-		required: ['query'],
-		properties: {
-			query: {
-				type: 'object',
-				description: 'A JSON object for filtering projects. Keys are field names and values are the values to match. For example: `{"Name": "CSBD"}` to get the project with the name "CSBD".',
-			}
-		},
-		annotations: {
-			readOnlyHint: true
-		}
+		query: z
+			.record(z.string())
+			.optional()
+			.default({})
+			.describe('A JSON object for filtering projects. Keys are field names and values are the values to match. For example: `{"Name": "CSBD"}` to get the project with the name "CSBD".')
+	},
+	annotations: {
+		readOnlyHint: true
 	}
 };

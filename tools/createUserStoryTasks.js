@@ -1,7 +1,8 @@
 
 import {getRallyApi} from './utils.js';
+import {z} from 'zod';
 
-export default async function createUserStoryTasks({tasks = []}) {
+export async function createUserStoryTasks({tasks = []}) {
 
 	//Validate required fields for each task
 	const requiredFields = ['Project', 'WorkProduct', 'Name', 'Description'];
@@ -66,18 +67,16 @@ export default async function createUserStoryTasks({tasks = []}) {
 
 export const createUserStoryTasksTool = {
 	name: 'createUserStoryTasks',
+	title: 'Create User Story Tasks',
 	description: 'This tool creates one or more tasks for a user story.',
 	inputSchema: {
-		type: 'object',
-		required: ['tasks'],
-		properties: {
-			tasks: {
-				type: 'array',
-				description: 'An array of task objects to be created. Each object must contain the necessary fields for a task.',
-				items: {
-					type: 'object'
-				}
-			}
-		}
+		tasks: z
+			.array(z.object({
+				Project: z.string().describe('The project ObjectID to associate the task with. Example: /project/12345'),
+				WorkProduct: z.string().describe('The user story ObjectID to associate the task with. Example: /hierarchicalrequirement/12345'),
+				Name: z.string().describe('The name of the task'),
+				Description: z.string().describe('The description of the task')
+			}))
+			.describe('An array of task objects to be created. Each object must contain the necessary fields for a task.')
 	}
 };

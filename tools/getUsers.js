@@ -1,7 +1,8 @@
 
 import {getRallyApi, queryUtils} from './utils.js';
+import {z} from 'zod';
 
-export default async function getUsers({query}) {
+export async function getUsers({query}) {
 	const rallyApi = getRallyApi();
 
 	try {
@@ -60,24 +61,15 @@ export default async function getUsers({query}) {
 
 export const getUsersTool = {
 	name: 'getUsers',
+	title: 'Get Users',
 	description: 'This tool retrieves a list of users from Rally.',
 	inputSchema: {
-		type: 'object',
-		required: ['query'],
-		properties: {
-			query: {
-				type: 'object',
-				description: 'A JSON object for filtering users. Keys are field names and values are the values to match. For example: `{"DisplayName": "Marc Pla"}` to find a specific user by display name.',
-				properties: {
-					DisplayName: {
-						type: 'string',
-						description: 'The display name of the user. Example: "Marc Pla"'
-					}
-				}
-			}
-		},
-		annotations: {
-			readOnlyHint: true
-		}
+		query: z
+			.record(z.string())
+			.optional()
+			.describe('A JSON object for filtering users. Keys are field names and values are the values to match. For example: `{"DisplayName": "Marc Pla"}` to find a specific user by display name.')
+	},
+	annotations: {
+		readOnlyHint: true
 	}
 };

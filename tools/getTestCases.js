@@ -1,7 +1,8 @@
 import {getRallyApi, queryUtils} from './utils.js';
-import {defaultProject} from '../index.js';
+import {rallyData} from '../index.js';
+import {z} from 'zod';
 
-export default async function getTestCases({query, includeSteps = false}) {
+export async function getTestCases({query, includeSteps = false}) {
 	const rallyApi = getRallyApi();
 
 	try {
@@ -94,22 +95,20 @@ export default async function getTestCases({query, includeSteps = false}) {
 
 export const getTestCasesTool = {
 	name: 'getTestCases',
+	title: 'Get Test Cases',
 	description: 'This tool retrieves a list of all test cases for a given user story. It can optionally include the test steps for each test case.',
 	inputSchema: {
-		type: 'object',
-		//required: ['query'],
-		properties: {
-			query: {
-				type: 'object',
-				description: 'A JSON object for filtering test cases. Keys are field names and values are the values to match. For example: `{"Iteration.ObjectID": "79965788689"}` to get test cases for a specific user story. When filtering by a related entity, always use the ObjectID of the entity instead of the name.',
-			},
-			includeSteps: {
-				type: 'boolean',
-				description: 'Whether to include test case steps in the response. Defaults to false. If only one test case is returned, steps are automatically included.'
-			}
-		},
-		annotations: {
-			readOnlyHint: true
-		}
+		query: z
+			.record(z.string())
+			.optional()
+			.describe('A JSON object for filtering test cases. Keys are field names and values are the values to match. For example: `{"Iteration.ObjectID": "79965788689"}` to get test cases for a specific user story. When filtering by a related entity, always use the ObjectID of the entity instead of the name.'),
+		includeSteps: z
+			.boolean()
+			.optional()
+			.default(false)
+			.describe('Whether to include test case steps in the response. Defaults to false. If only one test case is returned, steps are automatically included.')
+	},
+	annotations: {
+		readOnlyHint: true
 	}
 };

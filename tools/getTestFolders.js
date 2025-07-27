@@ -1,6 +1,7 @@
 import {getRallyApi, queryUtils} from './utils.js';
+import {z} from 'zod';
 
-export default async function getTestFolders({query}) {
+export async function getTestFolders({query}) {
 	const rallyApi = getRallyApi();
 
 	try {
@@ -66,18 +67,15 @@ export default async function getTestFolders({query}) {
 
 export const getTestFoldersTool = {
 	name: 'getTestFolders',
+	title: 'Get Test Folders',
 	description: 'This tool retrieves a list of all test folders from Rally.',
 	inputSchema: {
-		type: 'object',
-		required: ['query'],
-		properties: {
-			query: {
-				type: 'object',
-				description: 'A JSON object for filtering test folders. Keys are field names and values are the values to match. For example: `{"Project.ObjectID": "12345"}` to get test folders for a specific project. When filtering by a related entity, always use the ObjectID of the entity instead of the name.',
-			}
-		},
-		annotations: {
-			readOnlyHint: true
-		}
+		query: z
+			.record(z.string())
+			.optional()
+			.describe('A JSON object for filtering test folders. Keys are field names and values are the values to match. For example: `{"Project.ObjectID": "12345"}` to get test folders for a specific project. When filtering by a related entity, always use the ObjectID of the entity instead of the name.')
+	},
+	annotations: {
+		readOnlyHint: true
 	}
 };

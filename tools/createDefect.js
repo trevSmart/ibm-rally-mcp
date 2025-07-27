@@ -2,7 +2,7 @@
 import {getRallyApi} from './utils.js';
 import {z} from 'zod';
 
-export default async function createDefect({defect}) {
+export async function createDefect({defect}) {
     //Validate required fields
     if (!defect || !defect.Name) {
         throw new Error('Defect Name is required');
@@ -75,15 +75,13 @@ export default async function createDefect({defect}) {
 
 export const createDefectTool = {
 	name: 'createDefect',
+	title: 'Create Defect',
 	description: 'This tool creates a new defect in Rally using the exact example from the documentation.',
 	inputSchema: {
-		type: 'object',
-		required: ['defect'],
-		properties: {
-			defect: {
-				type: 'object',
-				description: 'The defect data to create. Must include Name.'
-			}
-		}
+		defect: z
+			.object({
+				Name: z.string().describe('The name of the defect')
+			})
+			.describe('The defect data to create. Must include Name.')
 	}
 };

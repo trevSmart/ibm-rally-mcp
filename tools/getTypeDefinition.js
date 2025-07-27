@@ -1,6 +1,7 @@
 import {getRallyApi, queryUtils} from './utils.js';
+import {z} from 'zod';
 
-export default async function getTypeDefinition({query}) {
+export async function getTypeDefinition({query}) {
 	const rallyApi = getRallyApi();
 
 	try {
@@ -58,17 +59,15 @@ export default async function getTypeDefinition({query}) {
 
 export const getTypeDefinitionTool = {
 	name: 'getTypeDefinition',
+	title: 'Get Type Definition',
 	description: 'This tool retrieves object model metadata from Rally.',
 	inputSchema: {
-		type: 'object',
-		properties: {
-			query: {
-				type: 'object',
-				description: 'A JSON object for filtering type definitions. Keys are field names and values are the values to match. For example: `{"Name": "Defect"}`.'
-			}
-		},
-		annotations: {
-			readOnlyHint: true
-		}
+		query: z
+			.record(z.string())
+			.optional()
+			.describe('A JSON object for filtering type definitions. Keys are field names and values are the values to match. For example: `{"Name": "Defect"}`.')
+	},
+	annotations: {
+		readOnlyHint: true
 	}
 };

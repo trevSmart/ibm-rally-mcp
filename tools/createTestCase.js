@@ -1,8 +1,9 @@
 
 import {getRallyApi} from './utils.js';
-import {defaultProject} from '../index.js';
+import {rallyData} from '../index.js';
+import {z} from 'zod';
 
-export default async function createTestCase({testCase}) {
+export async function createTestCase({testCase}) {
     try {
 
         //Validate required fields
@@ -39,7 +40,7 @@ export default async function createTestCase({testCase}) {
             Name: testCase.Name,
             Description: testCase.Description || '',
             WorkProduct: testCase.UserStory, //Link to the user story
-            Project: testCase.Project || defaultProject.ObjectID,
+            Project: testCase.Project || rallyData.defaultProject.ObjectID,
             Iteration: testCase.Iteration,
             Owner: testCase.Owner,
             Objective: testCase.Objective || testCase.Name,
@@ -132,64 +133,25 @@ export default async function createTestCase({testCase}) {
 
 export const createTestCaseTool = {
 	name: 'createTestCase',
+	title: 'Create Test Case',
 	description: 'This tool creates a new test case for a user story with N steps.',
 	inputSchema: {
-		type: 'object',
-		required: ['testCase'],
-		properties: {
-			testCase: {
-				type: 'object',
-				description: 'The test case data to create. Must include Name, UserStory, and Steps.',
-				required: ['Name', 'UserStory', 'Steps', 'Owner', 'TestFolder'],
-				properties: {
-					Name: {
-						type: 'string',
-						description: 'The name of the test case. Example: "Test login functionality"'
-					},
-					Description: {
-						type: 'string',
-						description: 'The description of the test case. Example: "Test case to verify user login functionality"'
-					},
-					UserStory: {
-						type: 'string',
-						description: 'The user story ObjectID to associate the test case with. Example: /hierarchicalrequirement/12345'
-					},
-					Project: {
-						type: 'string',
-						description: 'The project ObjectID to associate the test case with. Example: /project/12345'
-					},
-					Iteration: {
-						type: 'string',
-						description: 'The iteration ObjectID to associate the test case with. Example: /iteration/12345'
-					},
-					Owner: {
-						type: 'string',
-						description: 'The user ObjectID to associate the test case with. Example: /user/12345'
-					},
-					TestFolder: {
-						type: 'string',
-						description: 'The test folder ObjectID to associate the test case with. Example: /testfolder/12345'
-					},
-					Steps: {
-						type: 'array',
-						description: 'An array of test case steps. Each step must have Input and ExpectedResult.',
-						items: {
-							type: 'object',
-							required: ['Input', 'ExpectedResult'],
-							properties: {
-								Input: {
-									type: 'string',
-									description: 'The input/action for this test step. Example: "Enter username in username field"'
-								},
-								ExpectedResult: {
-									type: 'string',
-									description: 'The expected result for this test step. Example: "Username field should be populated with entered value"'
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		testCase: z
+			.object({
+				Name: z.string().describe('The name of the test case. Example: "Test login functionality"'),
+				Description: z.string().optional().describe('The description of the test case. Example: "Test case to verify user login functionality"'),
+				UserStory: z.string().describe('The user story ObjectID to associate the test case with. Example: /hierarchicalrequirement/12345'),
+				Project: z.string().optional().describe('The project ObjectID to associate the test case with. Example: /project/12345'),
+				Iteration: z.string().optional().describe('The iteration ObjectID to associate the test case with. Example: /iteration/12345'),
+				Owner: z.string().describe('The user ObjectID to associate the test case with. Example: /user/12345'),
+				TestFolder: z.string().describe('The test folder ObjectID to associate the test case with. Example: /testfolder/12345'),
+				Steps: z
+					.array(z.object({
+						Input: z.string().describe('The input/action for this test step. Example: "Enter username in username field"'),
+						ExpectedResult: z.string().describe('The expected result for this test step. Example: "Username field should be populated with entered value"')
+					}))
+					.describe('An array of test case steps. Each step must have Input and ExpectedResult.')
+			})
+			.describe('The test case data to create. Must include Name, UserStory, and Steps.')
 	}
 };

@@ -1,7 +1,8 @@
 
 import {getRallyApi} from './utils.js';
+import {z} from 'zod';
 
-export default async function updateTask({taskRef, updates}) {
+export async function updateTask({taskRef, updates}) {
     //Validate required fields
     if (!taskRef) {
         throw new Error('taskRef is required');
@@ -55,19 +56,14 @@ export default async function updateTask({taskRef, updates}) {
 
 export const updateTaskTool = {
 	name: 'updateTask',
+	title: 'Update Task',
 	description: 'This tool updates an existing task in Rally.',
 	inputSchema: {
-		type: 'object',
-		required: ['taskRef', 'updates'],
-		properties: {
-			taskRef: {
-				type: 'string',
-				description: 'The reference or ObjectID of the task to update.'
-			},
-			updates: {
-				type: 'object',
-				description: 'The fields to update.'
-			}
-		}
+		taskRef: z
+			.string()
+			.describe('The reference or ObjectID of the task to update.'),
+		updates: z
+			.record(z.any())
+			.describe('The fields to update.')
 	}
 };

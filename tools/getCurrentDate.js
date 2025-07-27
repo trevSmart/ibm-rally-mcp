@@ -1,6 +1,4 @@
-
-
-export default async function getCurrentDate() {
+export async function getCurrentDate() {
 	try {
 		const now = new Date();
 
@@ -32,12 +30,10 @@ export default async function getCurrentDate() {
 
 export const getCurrentDateTool = {
 	name: 'getCurrentDate',
+	title: 'Get Current Date',
 	description: 'This tool retrieves the current date and time information.',
-	inputSchema: {
-		type: 'object',
-		properties: {},
-		annotations: {
-			readOnlyHint: true
-		}
+	inputSchema: {},
+	annotations: {
+		readOnlyHint: true
 	}
 };

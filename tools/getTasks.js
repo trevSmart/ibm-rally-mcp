@@ -1,6 +1,7 @@
 import {getRallyApi, queryUtils} from './utils.js';
+import {z} from 'zod';
 
-export default async function getTasks({query}) {
+export async function getTasks({query}) {
 	const rallyApi = getRallyApi();
 
 	try {
@@ -59,18 +60,15 @@ export default async function getTasks({query}) {
 
 export const getTasksTool = {
 	name: 'getTasks',
+	title: 'Get Tasks',
 	description: 'This tool retrieves a list of all tasks for a given user story.',
 	inputSchema: {
-		type: 'object',
-		required: ['query'],
-		properties: {
-			query: {
-				type: 'object',
-				description: 'A JSON object for filtering tasks. Keys are field names and values are the values to match. For example: `{"WorkProduct.ObjectID": "12345"}` to get tasks for a specific user story. When filtering by a related entity, always use the ObjectID of the entity instead of the name.',
-			}
-		},
-		annotations: {
-			readOnlyHint: true
-		}
+		query: z
+			.record(z.string())
+			.optional()
+			.describe('A JSON object for filtering tasks. Keys are field names and values are the values to match. For example: `{"WorkProduct.ObjectID": "12345"}` to get tasks for a specific user story. When filtering by a related entity, always use the ObjectID of the entity instead of the name.')
+	},
+	annotations: {
+		readOnlyHint: true
 	}
 };

@@ -1,7 +1,8 @@
 
 import {getRallyApi, queryUtils} from './utils.js';
+import {z} from 'zod';
 
-export default async function getUserStories({query}) {
+export async function getUserStories({query}) {
 	const rallyApi = getRallyApi();
 
 	try {
@@ -63,18 +64,15 @@ export default async function getUserStories({query}) {
 
 export const getUserStoriesTool = {
 	name: 'getUserStories',
+	title: 'Get User Stories',
 	description: 'This tool retrieves details about the user stories of the given iteration (sprint).',
 	inputSchema: {
-		type: 'object',
-		required: ['query'],
-		properties: {
-			query: {
-				type: 'object',
-				description: 'A JSON object for filtering user stories. Keys are field names and values are the values to match. For example: `{"State": "Accepted", "Iteration.ObjectID": "12345"}`. When filtering by a related entity, always use the ObjectID of the entity instead of the name.',
-			}
-		},
-		annotations: {
-			readOnlyHint: true
-		}
+		query: z
+			.record(z.string())
+			.optional()
+			.describe('A JSON object for filtering user stories. Keys are field names and values are the values to match. For example: `{"State": "Accepted", "Iteration.ObjectID": "12345"}`. When filtering by a related entity, always use the ObjectID of the entity instead of the name.')
+	},
+	annotations: {
+		readOnlyHint: true
 	}
 };
