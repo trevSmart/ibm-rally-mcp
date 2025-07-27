@@ -1,4 +1,4 @@
-/*eslint-disable no-console */
+
 
 export default async function getCurrentDate() {
 	try {
@@ -19,7 +19,7 @@ export default async function getCurrentDate() {
 		};
 
 	} catch (error) {
-		console.error(`Error en getCurrentDate: ${error.message}`);
+		// console.error(`Error en getCurrentDate: ${error.message}`);
 		return {
 			isError: true,
 			content: [{
@@ -29,3 +29,15 @@ export default async function getCurrentDate() {
 		};
 	}
 }
+
+export const getCurrentDateTool = {
+	name: 'getCurrentDate',
+	description: 'This tool retrieves the current date and time information.',
+	inputSchema: {
+		type: 'object',
+		properties: {},
+		annotations: {
+			readOnlyHint: true
+		}
+	}
+};

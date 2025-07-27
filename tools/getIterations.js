@@ -44,7 +44,7 @@ export default async function getIterations({query}) {
 			}]
 		};
 	} catch (error) {
-		console.error(`Error en getIterations: ${error.message}`);
+		// console.error(`Error en getIterations: ${error.message}`);
 		return {
 			isError: true,
 			content: [{
@@ -54,3 +54,21 @@ export default async function getIterations({query}) {
 		};
 	}
 }
+
+export const getIterationsTool = {
+	name: 'getIterations',
+	description: 'This tool retrieves a list of all iterations (sprints) for the configured project.',
+	inputSchema: {
+		type: 'object',
+		required: ['query'],
+		properties: {
+			query: {
+				type: 'object',
+				description: 'A JSON object for filtering iterations. Keys are field names and values are the values to match. For example: `{"State": "Accepted", "Project.ObjectID": "12345"}`. When filtering by a related entity, always use the ObjectID of the entity instead of the name.',
+			}
+		},
+		annotations: {
+			readOnlyHint: true
+		}
+	}
+};

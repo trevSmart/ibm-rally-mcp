@@ -46,7 +46,7 @@ export default async function getTasks({query}) {
 		};
 
 	} catch (error) {
-		console.error(`Error in getTasks: ${error.message}`);
+		// console.error(`Error in getTasks: ${error.message}`);
 		return {
 			isError: true,
 			content: [{
@@ -56,3 +56,21 @@ export default async function getTasks({query}) {
 		};
 	}
 }
+
+export const getTasksTool = {
+	name: 'getTasks',
+	description: 'This tool retrieves a list of all tasks for a given user story.',
+	inputSchema: {
+		type: 'object',
+		required: ['query'],
+		properties: {
+			query: {
+				type: 'object',
+				description: 'A JSON object for filtering tasks. Keys are field names and values are the values to match. For example: `{"WorkProduct.ObjectID": "12345"}` to get tasks for a specific user story. When filtering by a related entity, always use the ObjectID of the entity instead of the name.',
+			}
+		},
+		annotations: {
+			readOnlyHint: true
+		}
+	}
+};

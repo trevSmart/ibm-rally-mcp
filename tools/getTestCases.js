@@ -1,4 +1,5 @@
 import {getRallyApi, queryUtils} from './utils.js';
+import {defaultProject} from '../index.js';
 
 export default async function getTestCases({query, includeSteps = false}) {
 	const rallyApi = getRallyApi();
@@ -7,7 +8,7 @@ export default async function getTestCases({query, includeSteps = false}) {
 
 		const queryOptions = {
 			type: 'testcase',
-			fetch: ['FormattedID', 'Name', 'Description', 'Project', 'Iteration', 'Owner', 'State', 'TestCaseSteps'],
+			fetch: ['FormattedID', 'Name', 'Description', 'Project', 'Iteration', 'Owner', 'State', 'TestCaseSteps', 'Objective', 'PreConditions', 'Type', 'Priority', 'c_APPGAR', 'c_Canal'],
 		};
 
 		if (query) {
@@ -29,8 +30,8 @@ export default async function getTestCases({query, includeSteps = false}) {
 			};
 		}
 
-		console.error('result.Results');
-		console.error(JSON.stringify(result.Results, null, '\t'));
+		// console.error('result.Results');
+		// console.error(JSON.stringify(result.Results, null, '\t'));
 
 		const testCases = await Promise.all(result.Results.map(async tc => {
 			const testCase = {
@@ -39,13 +40,13 @@ export default async function getTestCases({query, includeSteps = false}) {
 				Name: tc.Name,
 				State: tc.State,
 				Description: tc.Description,
-				Owner: tc.Owner ? tc.Owner._refObjectName : 'No Owner'
+				Owner: tc.Owner
 			};
 
-			// Si includeSteps és true o si només hi ha un test case, recuperem els steps
+			//Si includeSteps és true o si només hi ha un test case, recuperem els steps
 			if (includeSteps || result.Results.length === 1) {
 				try {
-					// Recuperar els steps del test case
+					//Recuperar els steps del test case
 					const stepsResult = await rallyApi.query({
 						type: 'testcasestep',
 						fetch: ['StepIndex', 'Input', 'ExpectedResult'],
@@ -63,7 +64,7 @@ export default async function getTestCases({query, includeSteps = false}) {
 						testCase.Steps = [];
 					}
 				} catch (stepError) {
-					console.error(`Error recuperant steps per TC ${tc.FormattedID}: ${stepError.message}`);
+					// console.error(`Error recuperant steps per TC ${tc.FormattedID}: ${stepError.message}`);
 					testCase.Steps = [];
 					testCase.StepsError = stepError.message;
 				}
@@ -80,7 +81,7 @@ export default async function getTestCases({query, includeSteps = false}) {
 		};
 
 	} catch (error) {
-		console.error(`Error in getTestCases: ${error.message}`);
+		// console.error(`Error in getTestCases: ${error.message}`);
 		return {
 			isError: true,
 			content: [{
@@ -90,3 +91,25 @@ export default async function getTestCases({query, includeSteps = false}) {
 		};
 	}
 }
+
+export const getTestCasesTool = {
+	name: 'getTestCases',
+	description: 'This tool retrieves a list of all test cases for a given user story. It can optionally include the test steps for each test case.',
+	inputSchema: {
+		type: 'object',
+		//required: ['query'],
+		properties: {
+			query: {
+				type: 'object',
+				description: 'A JSON object for filtering test cases. Keys are field names and values are the values to match. For example: `{"Iteration.ObjectID": "79965788689"}` to get test cases for a specific user story. When filtering by a related entity, always use the ObjectID of the entity instead of the name.',
+			},
+			includeSteps: {
+				type: 'boolean',
+				description: 'Whether to include test case steps in the response. Defaults to false. If only one test case is returned, steps are automatically included.'
+			}
+		},
+		annotations: {
+			readOnlyHint: true
+		}
+	}
+};

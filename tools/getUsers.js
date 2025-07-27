@@ -1,4 +1,4 @@
-/*eslint-disable no-console */
+
 import {getRallyApi, queryUtils} from './utils.js';
 
 export default async function getUsers({query}) {
@@ -57,3 +57,27 @@ export default async function getUsers({query}) {
 		};
 	}
 }
+
+export const getUsersTool = {
+	name: 'getUsers',
+	description: 'This tool retrieves a list of users from Rally.',
+	inputSchema: {
+		type: 'object',
+		required: ['query'],
+		properties: {
+			query: {
+				type: 'object',
+				description: 'A JSON object for filtering users. Keys are field names and values are the values to match. For example: `{"DisplayName": "Marc Pla"}` to find a specific user by display name.',
+				properties: {
+					DisplayName: {
+						type: 'string',
+						description: 'The display name of the user. Example: "Marc Pla"'
+					}
+				}
+			}
+		},
+		annotations: {
+			readOnlyHint: true
+		}
+	}
+};

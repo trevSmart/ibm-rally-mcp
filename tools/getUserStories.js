@@ -1,4 +1,4 @@
-/*eslint-disable no-console */
+
 import {getRallyApi, queryUtils} from './utils.js';
 
 export default async function getUserStories({query}) {
@@ -8,7 +8,7 @@ export default async function getUserStories({query}) {
 
 		const queryOptions = {
 			type: 'hierarchicalrequirement',
-			fetch: ['FormattedID', 'Name', 'Description', 'Project', 'Iteration', 'Blocked', 'TaskEstimateTotal', 'ToDo', 'Owner', 'State', 'PlanEstimate', 'TaskStatus', 'Tasks', 'TestCases', 'Defects', 'Discussion', 'ObjectID'],
+			fetch: ['FormattedID', 'Name', 'Description', 'Project', 'Iteration', 'Blocked', 'TaskEstimateTotal', 'ToDo', 'Owner', 'State', 'PlanEstimate', 'TaskStatus', 'Tasks', 'TestCases', 'Defects', 'Discussion', 'ObjectID', 'c_Appgar'],
 		};
 
 		if (query) {
@@ -30,8 +30,8 @@ export default async function getUserStories({query}) {
 			};
 		}
 
-		console.error('result.Results');
-		console.error(JSON.stringify(result.Results, null, '\t'));
+		// console.error('result.Results');
+		// console.error(JSON.stringify(result.Results, null, '\t'));
 
 		const userStories = result.Results.map(us => ({
 			ObjectID: us.ObjectID,
@@ -50,7 +50,7 @@ export default async function getUserStories({query}) {
 		};
 
 	} catch (error) {
-		console.error(`Error en getUserStories: ${error.message}`);
+		// console.error(`Error en getUserStories: ${error.message}`);
 		return {
 			isError: true,
 			content: [{
@@ -60,3 +60,21 @@ export default async function getUserStories({query}) {
 		};
 	}
 }
+
+export const getUserStoriesTool = {
+	name: 'getUserStories',
+	description: 'This tool retrieves details about the user stories of the given iteration (sprint).',
+	inputSchema: {
+		type: 'object',
+		required: ['query'],
+		properties: {
+			query: {
+				type: 'object',
+				description: 'A JSON object for filtering user stories. Keys are field names and values are the values to match. For example: `{"State": "Accepted", "Iteration.ObjectID": "12345"}`. When filtering by a related entity, always use the ObjectID of the entity instead of the name.',
+			}
+		},
+		annotations: {
+			readOnlyHint: true
+		}
+	}
+};

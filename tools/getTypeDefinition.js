@@ -45,7 +45,7 @@ export default async function getTypeDefinition({query}) {
 		};
 
 	} catch (error) {
-		console.error(`Error in getTypeDefinition: ${error.message}`);
+		// console.error(`Error in getTypeDefinition: ${error.message}`);
 		return {
 			isError: true,
 			content: [{
@@ -55,3 +55,20 @@ export default async function getTypeDefinition({query}) {
 		};
 	}
 }
+
+export const getTypeDefinitionTool = {
+	name: 'getTypeDefinition',
+	description: 'This tool retrieves object model metadata from Rally.',
+	inputSchema: {
+		type: 'object',
+		properties: {
+			query: {
+				type: 'object',
+				description: 'A JSON object for filtering type definitions. Keys are field names and values are the values to match. For example: `{"Name": "Defect"}`.'
+			}
+		},
+		annotations: {
+			readOnlyHint: true
+		}
+	}
+};

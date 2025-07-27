@@ -1,8 +1,8 @@
-/*eslint-disable no-undef, no-console */
+
 import {getRallyApi} from './utils.js';
 
 export default async function updateTask({taskRef, updates}) {
-    // Validate required fields
+    //Validate required fields
     if (!taskRef) {
         throw new Error('taskRef is required');
     }
@@ -10,17 +10,17 @@ export default async function updateTask({taskRef, updates}) {
         throw new Error('updates must be a non-empty object');
     }
 
-    // If taskRef is a number (ObjectID), convert to ref
+    //If taskRef is a number (ObjectID), convert to ref
     if (!isNaN(taskRef) && !taskRef.startsWith('/task/')) {
         taskRef = `/task/${taskRef}`;
     }
 
-    // Validate that taskRef looks like a valid Rally ref
+    //Validate that taskRef looks like a valid Rally ref
     if (!taskRef.startsWith('/task/')) {
         throw new Error('Invalid taskRef: must be a valid task reference or ObjectID');
     }
 
-    console.log(`Updating task ${taskRef} with updates:`, JSON.stringify(updates, null, 2));
+    // console.error(`Updating task ${taskRef} with updates:`, JSON.stringify(updates, null, 2));
 
     const rallyApi = getRallyApi();
 
@@ -28,11 +28,11 @@ export default async function updateTask({taskRef, updates}) {
         const result = await rallyApi.update({
             ref: taskRef,
             data: updates,
-            fetch: ['FormattedID', 'Name', 'State'] // Fetch some basic fields
+            fetch: ['FormattedID', 'Name', 'State'] //Fetch some basic fields
         });
 
         const updatedObject = result.Object;
-        console.log(`Successfully updated task: ${updatedObject.FormattedID} - ${updatedObject.Name}`);
+        // console.error(`Successfully updated task: ${updatedObject.FormattedID} - ${updatedObject.Name}`);
 
         return {
             content: [
@@ -48,7 +48,26 @@ export default async function updateTask({taskRef, updates}) {
             ]
         };
     } catch (error) {
-        console.error('Error updating task:', error);
+        // console.error('Error updating task:', error);
         throw error;
     }
 }
+
+export const updateTaskTool = {
+	name: 'updateTask',
+	description: 'This tool updates an existing task in Rally.',
+	inputSchema: {
+		type: 'object',
+		required: ['taskRef', 'updates'],
+		properties: {
+			taskRef: {
+				type: 'string',
+				description: 'The reference or ObjectID of the task to update.'
+			},
+			updates: {
+				type: 'object',
+				description: 'The fields to update.'
+			}
+		}
+	}
+};

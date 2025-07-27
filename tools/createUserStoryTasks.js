@@ -1,4 +1,4 @@
-/*eslint-disable no-undef, no-console */
+
 import {getRallyApi} from './utils.js';
 
 export default async function createUserStoryTasks({tasks = []}) {
@@ -23,12 +23,12 @@ export default async function createUserStoryTasks({tasks = []}) {
 		}
 	});
 
-	console.log(`Validation passed for ${tasks.length} tasks`);
+	// console.error(`Validation passed for ${tasks.length} tasks`);
 
 	const rallyApi = getRallyApi();
 
 	const createPromises = tasks.map(taskData => {
-		console.error('Creating task with data:', JSON.stringify(taskData, null, 2));
+		// console.error('Creating task with data:', JSON.stringify(taskData, null, 2));
 		return rallyApi.create({
 			type: 'task',
 			data: taskData,
@@ -37,29 +37,47 @@ export default async function createUserStoryTasks({tasks = []}) {
 	});
 
 	return Promise.all(createPromises)
-		.then(results => {
-			console.log('All tasks created successfully:');
-			const output = results.map(result => {
-				const createdObject = result.Object;
-				console.log(`Successfully created task: ${createdObject.FormattedID} - ${createdObject.Name}`);
-				return {
-					FormattedID: createdObject.FormattedID,
-					Name: createdObject.Name,
-					_ref: createdObject._ref
-				};
-			});
-
+	.then(results => {
+		// console.error('All tasks created successfully:');
+		const output = results.map(result => {
+			const createdObject = result.Object;
+			// console.error(`Successfully created task: ${createdObject.FormattedID} - ${createdObject.Name}`);
 			return {
-				content: [
-					{
-						type: 'text',
-						text: JSON.stringify(output, null, 2)
-					}
-				]
+				FormattedID: createdObject.FormattedID,
+				Name: createdObject.Name,
+				_ref: createdObject._ref
 			};
-		})
-		.catch(error => {
-			console.error('One or more tasks could not be created.', error);
-			throw error;
 		});
+
+		return {
+			content: [
+				{
+					type: 'text',
+					text: JSON.stringify(output, null, 2)
+				}
+			]
+		};
+	})
+	.catch(error => {
+		// console.error('One or more tasks could not be created.', error);
+		throw error;
+	});
 }
+
+export const createUserStoryTasksTool = {
+	name: 'createUserStoryTasks',
+	description: 'This tool creates one or more tasks for a user story.',
+	inputSchema: {
+		type: 'object',
+		required: ['tasks'],
+		properties: {
+			tasks: {
+				type: 'array',
+				description: 'An array of task objects to be created. Each object must contain the necessary fields for a task.',
+				items: {
+					type: 'object'
+				}
+			}
+		}
+	}
+};
