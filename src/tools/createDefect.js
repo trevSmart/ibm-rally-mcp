@@ -1,5 +1,5 @@
 
-import {getRallyApi} from './utils.js';
+import {getRallyApi} from '../utils.js';
 import {z} from 'zod';
 
 export async function createDefect({defect}) {
@@ -20,7 +20,7 @@ export async function createDefect({defect}) {
             fetch: ['Name', 'ObjectID'],
             limit: 1
         });
-        console.error('Connection test successful, found workspaces:', workspaceTest.Results?.length || 0);
+        console.error('Connection test successful, found workspaces:', workspaceTest.Results.length);
 
         //Now try to create the defect
         console.error('Attempting to create defect...');

@@ -17,7 +17,7 @@ export async function getCurrentDate() {
 		};
 
 	} catch (error) {
-		// console.error(`Error en getCurrentDate: ${error.message}`);
+		//console.error(`Error en getCurrentDate: ${error.message}`);
 		return {
 			isError: true,
 			content: [{

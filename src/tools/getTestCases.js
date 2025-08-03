@@ -1,5 +1,5 @@
-import {getRallyApi, queryUtils} from './utils.js';
-import {rallyData} from '../index.js';
+import {getRallyApi, queryUtils} from '../utils.js';
+import {rallyData} from '../../index.js';
 import {z} from 'zod';
 
 export async function getTestCases({query, includeSteps = false}) {
@@ -13,7 +13,7 @@ export async function getTestCases({query, includeSteps = false}) {
 		};
 
 		if (query) {
-			const rallyQueries = Object.keys(query).map(key => queryUtils.where(key, '=', query[key]));
+			const rallyQueries = Object.keys(query).map( key => queryUtils.where(key, '=', query[key]));
 
 			if (rallyQueries.length) {
 				queryOptions.query = rallyQueries.reduce((a, b) => a.and(b));
@@ -31,8 +31,8 @@ export async function getTestCases({query, includeSteps = false}) {
 			};
 		}
 
-		// console.error('result.Results');
-		// console.error(JSON.stringify(result.Results, null, '\t'));
+		//console.error('result.Results');
+		//console.error(JSON.stringify(result.Results, null, '\t'));
 
 		const testCases = await Promise.all(result.Results.map(async tc => {
 			const testCase = {
@@ -65,7 +65,7 @@ export async function getTestCases({query, includeSteps = false}) {
 						testCase.Steps = [];
 					}
 				} catch (stepError) {
-					// console.error(`Error recuperant steps per TC ${tc.FormattedID}: ${stepError.message}`);
+					//console.error(`Error recuperant steps per TC ${tc.FormattedID}: ${stepError.message}`);
 					testCase.Steps = [];
 					testCase.StepsError = stepError.message;
 				}
@@ -82,7 +82,7 @@ export async function getTestCases({query, includeSteps = false}) {
 		};
 
 	} catch (error) {
-		// console.error(`Error in getTestCases: ${error.message}`);
+		//console.error(`Error in getTestCases: ${error.message}`);
 		return {
 			isError: true,
 			content: [{

@@ -1,6 +1,6 @@
 
-import {getRallyApi} from './utils.js';
-import {rallyData} from '../index.js';
+import {getRallyApi} from '../utils.js';
+import {rallyData} from '../../index.js';
 import {z} from 'zod';
 
 export async function createTestCase({testCase}) {

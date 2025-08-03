@@ -1,5 +1,5 @@
 
-import {getRallyApi} from './utils.js';
+import {getRallyApi} from '../utils.js';
 import {z} from 'zod';
 
 export async function updateTask({taskRef, updates}) {
@@ -21,7 +21,7 @@ export async function updateTask({taskRef, updates}) {
         throw new Error('Invalid taskRef: must be a valid task reference or ObjectID');
     }
 
-    // console.error(`Updating task ${taskRef} with updates:`, JSON.stringify(updates, null, 2));
+    //console.error(`Updating task ${taskRef} with updates:`, JSON.stringify(updates, null, 2));
 
     const rallyApi = getRallyApi();
 
@@ -33,7 +33,7 @@ export async function updateTask({taskRef, updates}) {
         });
 
         const updatedObject = result.Object;
-        // console.error(`Successfully updated task: ${updatedObject.FormattedID} - ${updatedObject.Name}`);
+        //console.error(`Successfully updated task: ${updatedObject.FormattedID} - ${updatedObject.Name}`);
 
         return {
             content: [
@@ -49,7 +49,7 @@ export async function updateTask({taskRef, updates}) {
             ]
         };
     } catch (error) {
-        // console.error('Error updating task:', error);
+        //console.error('Error updating task:', error);
         throw error;
     }
 }

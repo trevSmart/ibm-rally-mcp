@@ -1,5 +1,6 @@
 /*globals process */
 import rally from 'rally';
+import {mcpServer} from '../index.js';
 
 const {util: {query: queryUtils}} = rally;
 
@@ -36,8 +37,27 @@ async function getProjectId() {
 		throw new Error(`No s'ha trobat cap projecte amb el nom "${process.env.RALLY_PROJECT_NAME}"`);
 	}
 
-	console.error(`Projecte trobat: ${JSON.stringify(result.Results[0], null, '\t')}`);
+	log(`Projecte trobat: ${JSON.stringify(result.Results[0], null, '\t')}`);
 	return result.Results[0].ObjectID;
+}
+
+
+export async function log(data, logLevel = 'info') {
+	if (typeof data === 'object') {
+		data = JSON.stringify(data);
+	}
+	if (typeof data === 'string') {
+		if (data.length > 4000) {
+			data = data.slice(0, 3997) + '...';
+		}
+		data = '\n' + data + '\n';
+	}
+
+	try {
+		await mcpServer.server.sendLoggingMessage({level: logLevel, logger: 'MCP server', data});
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 export {getProjectId, getRallyApi, queryUtils};

@@ -1,5 +1,5 @@
 
-import {getRallyApi} from './utils.js';
+import {getRallyApi} from '../utils.js';
 import {z} from 'zod';
 
 export async function createUserStoryTasks({tasks = []}) {
@@ -24,25 +24,24 @@ export async function createUserStoryTasks({tasks = []}) {
 		}
 	});
 
-	// console.error(`Validation passed for ${tasks.length} tasks`);
+	//console.error(`Validation passed for ${tasks.length} tasks`);
 
 	const rallyApi = getRallyApi();
 
-	const createPromises = tasks.map(taskData => {
-		// console.error('Creating task with data:', JSON.stringify(taskData, null, 2));
-		return rallyApi.create({
+	const createPromises = tasks.map(taskData =>
+		//console.error('Creating task with data:', JSON.stringify(taskData, null, 2));
+		 rallyApi.create({
 			type: 'task',
 			data: taskData,
 			fetch: ['Name']
-		});
-	});
+		}));
 
 	return Promise.all(createPromises)
 	.then(results => {
-		// console.error('All tasks created successfully:');
+		//console.error('All tasks created successfully:');
 		const output = results.map(result => {
 			const createdObject = result.Object;
-			// console.error(`Successfully created task: ${createdObject.FormattedID} - ${createdObject.Name}`);
+			//console.error(`Successfully created task: ${createdObject.FormattedID} - ${createdObject.Name}`);
 			return {
 				FormattedID: createdObject.FormattedID,
 				Name: createdObject.Name,
@@ -60,7 +59,7 @@ export async function createUserStoryTasks({tasks = []}) {
 		};
 	})
 	.catch(error => {
-		// console.error('One or more tasks could not be created.', error);
+		//console.error('One or more tasks could not be created.', error);
 		throw error;
 	});
 }

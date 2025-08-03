@@ -1,4 +1,4 @@
-import {getRallyApi, queryUtils} from './utils.js';
+import {getRallyApi, queryUtils} from '../utils.js';
 import {z} from 'zod';
 
 export async function getTypeDefinition({query}) {
@@ -46,7 +46,7 @@ export async function getTypeDefinition({query}) {
 		};
 
 	} catch (error) {
-		// console.error(`Error in getTypeDefinition: ${error.message}`);
+		//console.error(`Error in getTypeDefinition: ${error.message}`);
 		return {
 			isError: true,
 			content: [{

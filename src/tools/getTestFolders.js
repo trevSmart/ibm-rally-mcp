@@ -1,4 +1,4 @@
-import {getRallyApi, queryUtils} from './utils.js';
+import {getRallyApi, queryUtils} from '../utils.js';
 import {z} from 'zod';
 
 export async function getTestFolders({query}) {
@@ -29,8 +29,8 @@ export async function getTestFolders({query}) {
 			};
 		}
 
-		// console.error('result.Results');
-		// console.error(JSON.stringify(result.Results, null, '\t'));
+		//console.error('result.Results');
+		//console.error(JSON.stringify(result.Results, null, '\t'));
 
 		const testFolders = result.Results.map(tf => ({
 			ObjectID: tf.ObjectID,
@@ -54,7 +54,7 @@ export async function getTestFolders({query}) {
 		};
 
 	} catch (error) {
-		// console.error(`Error in getTestFolders: ${error.message}`);
+		//console.error(`Error in getTestFolders: ${error.message}`);
 		return {
 			isError: true,
 			content: [{

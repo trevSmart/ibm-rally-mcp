@@ -1,4 +1,4 @@
-import {getRallyApi, queryUtils} from './utils.js';
+import {getRallyApi, queryUtils} from '../utils.js';
 import {z} from 'zod';
 
 export async function getTasks({query}) {
@@ -47,7 +47,7 @@ export async function getTasks({query}) {
 		};
 
 	} catch (error) {
-		// console.error(`Error in getTasks: ${error.message}`);
+		//console.error(`Error in getTasks: ${error.message}`);
 		return {
 			isError: true,
 			content: [{

@@ -1,0 +1,15 @@
+{
+	"eslint.enable": true,
+	"eslint.useFlatConfig": true,
+	"eslint.validate": [
+		"javascript"
+	],
+	"eslint.run": "onType",
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit"
+	},
+	"eslint.nodePath": "/Users/marcpla/.nvm/versions/node/v22.17.1/bin/node",
+	"terminal.integrated.env.osx": {
+		"PATH": "/Users/marcpla/.nvm/versions/node/v22.17.1/bin:${env:PATH}"
+	}
+}

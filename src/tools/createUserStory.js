@@ -1,6 +1,6 @@
 
-import {getRallyApi} from './utils.js';
-import {rallyData} from '../index.js';
+import {getRallyApi} from '../utils.js';
+import {rallyData, sendElicitRequest} from '../../index.js';
 import {z} from 'zod';
 
 export async function createUserStory({userStory}) {
@@ -22,7 +22,21 @@ export async function createUserStory({userStory}) {
         throw new Error('Invalid Iteration reference');
     }
 
-    // console.error('Creating user story with data:', JSON.stringify(userStory, null, 2));
+    const elicitResult = await sendElicitRequest({
+        confirmation: {
+            type: 'string',
+            title: 'Create User Story confirmation',
+            description: 'Are you sure you want to create this user story?',
+            enum: ['Yes', 'No'],
+            enumNames: ['✅ Create user story', '❌ Don\'t create']
+        }
+    });
+
+    if (elicitResult.action !== 'accept' || elicitResult.content?.confirmation !== 'Yes') {
+        return {
+            content: [{type: 'text', text: 'User story creation cancelled by user'}]
+        };
+    }
 
     const rallyApi = getRallyApi();
 
