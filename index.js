@@ -21,6 +21,7 @@ import {createTestCase, createTestCaseTool} from './src/tools/createTestCase.js'
 import {getUsersToolDefinition, getUsersTool} from './src/tools/getUsers.js';
 import {getTestFolders, getTestFoldersTool} from './src/tools/getTestFolders.js';
 import {getTestCaseSteps, getTestCaseStepsTool} from './src/tools/getTestCaseSteps.js';
+import {rallyMcpServerUtilsToolDefinition, rallyMcpServerUtilsTool} from './src/tools/rallyMcpServerUtils.js';
 import {createNewUserStoryPrompt, createNewUserStoryPromptDefinition} from './src/prompts/createNewUserStory.js';
 
 import {getProjects, getUserStories, getUsers} from './src/rallyServices.js';
@@ -113,6 +114,7 @@ mcpServer.registerTool('createTestCase', createTestCaseTool, createTestCase);
 mcpServer.registerTool('getUsers', getUsersToolDefinition, getUsersTool);
 mcpServer.registerTool('getTestFolders', getTestFoldersTool, getTestFolders);
 mcpServer.registerTool('getTestCaseSteps', getTestCaseStepsTool, getTestCaseSteps);
+mcpServer.registerTool('rallyMcpServerUtils', rallyMcpServerUtilsToolDefinition, rallyMcpServerUtilsTool);
 
 async function startServer() {
 	try {

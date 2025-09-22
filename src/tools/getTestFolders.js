@@ -7,15 +7,24 @@ export async function getTestFolders({query}) {
 	try {
 		const queryOptions = {
 			type: 'testfolder',
-			fetch: ['FormattedID', 'Name', 'Description', 'Project.', 'Iteration', 'Owner', 'State', 'Parent', 'TestCases'],
+			fetch: ['FormattedID', 'Name', 'Description', 'Iteration', 'State', 'Parent'],
 		};
 
-		if (query) {
-			const rallyQueries = Object.keys(query).map(key => queryUtils.where(key, '=', query[key]));
+		// Project is mandatory - add it to the query
+		if (!query || !query.Project) {
+			return {
+				isError: true,
+				content: [{
+					type: 'text',
+					text: 'Error: Project is mandatory. Please provide a Project ObjectID in the query.'
+				}]
+			};
+		}
 
-			if (rallyQueries.length) {
-				queryOptions.query = rallyQueries.reduce((a, b) => a.and(b));
-			}
+		const rallyQueries = Object.keys(query).map(key => queryUtils.where(key, '=', query[key]));
+
+		if (rallyQueries.length) {
+			queryOptions.query = rallyQueries.reduce((a, b) => a.and(b));
 		}
 
 		const result = await rallyApi.query(queryOptions);
@@ -67,12 +76,11 @@ export async function getTestFolders({query}) {
 export const getTestFoldersTool = {
 	name: 'getTestFolders',
 	title: 'Get Test Folders',
-	description: 'This tool retrieves a list of all test folders from Rally.',
+	description: 'This tool retrieves a list of test folders from Rally for a specific project.',
 	inputSchema: {
 		query: z
 			.record(z.string())
-			.optional()
-			.describe('A JSON object for filtering test folders. Keys are field names and values are the values to match. For example: `{"Project.ObjectID": "12345"}` to get test folders for a specific project. When filtering by a related entity, always use the ObjectID of the entity instead of the name.')
+			.describe('A JSON object for filtering test folders. Keys are field names and values are the values to match. Must include Project field with the project ObjectID. For example: `{"Project": "/project/12345"}` to get test folders for a specific project. When filtering by a related entity, always use the ObjectID of the entity instead of the name.')
 	},
 	annotations: {
 		readOnlyHint: true

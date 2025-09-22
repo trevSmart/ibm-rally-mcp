@@ -27,7 +27,7 @@ Aquesta secció descriu totes les tools MCP disponibles al servidor. Cada agent 
 
 ### getTestCases
 - **Fitxer**: `src/tools/getTestCases.js`
-- **Objectiu**: Recuperar test cases. Accepta filtres per `Iteration`, `Project`, `Owner`, `State` i `TestFolder`. Pot incloure els passos (`fetchSteps=true`) i, si la variable d'entorn `STRIP_HTML_TESTCASE_DESCRIPTION` està activada, neteja el camp `Description` d'HTML.
+- **Objectiu**: Recuperar test cases. Accepta filtres per `Iteration`, `Project`, `Owner`, `State` i `TestFolder`. Si la variable d'entorn `STRIP_HTML_TESTCASE_DESCRIPTION` està activada, neteja el camp `Description` d'HTML. Els passos s'han de consultar amb la tool `getTestCaseSteps`.
 
 ### getTestCaseSteps
 - **Fitxer**: `src/tools/getTestCaseSteps.js`

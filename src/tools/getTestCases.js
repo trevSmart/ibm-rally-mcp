@@ -35,14 +35,21 @@ function stripHtmlTags(value) {
 		.trim();
 }
 
-export async function getTestCases({query, fetchSteps = false}) {
+function sanitizeRichText(value) {
+	if (!stripDescriptionHtml) {
+		return value;
+	}
+	return stripHtmlTags(value);
+}
+
+export async function getTestCases({query}) {
 	const rallyApi = getRallyApi();
 
 	try {
 
 		const queryOptions = {
 			type: 'testcase',
-			fetch: ['FormattedID', 'Name', 'Description', 'Project', 'Iteration', 'Owner', 'State', 'TestCaseSteps', 'Objective', 'PreConditions', 'Type', 'Priority', 'c_APPGAR', 'c_Canal'],
+			fetch: ['FormattedID', 'Name', 'Description', 'Project', 'Iteration', 'State',, 'Objective', 'PreConditions', 'Type', 'Priority', 'c_APPGAR', 'c_Canal'],
 		};
 
 		if (query) {
@@ -67,44 +74,13 @@ export async function getTestCases({query, fetchSteps = false}) {
 		//console.error('result.Results');
 		//console.error(JSON.stringify(result.Results, null, '\t'));
 
-		const testCases = await Promise.all(result.Results.map(async tc => {
-			const testCase = {
-				ObjectID: tc.ObjectID,
-				FormattedID: tc.FormattedID,
-				Name: tc.Name,
-				State: tc.State,
-				Description: stripDescriptionHtml ? stripHtmlTags(tc.Description) : tc.Description,
-				Owner: tc.Owner
-			};
-
-			//Si fetchSteps és true o si només hi ha un test case, recuperem els steps
-			if (fetchSteps || result.Results.length === 1) {
-				try {
-					//Recuperar els steps del test case
-					const stepsResult = await rallyApi.query({
-						type: 'testcasestep',
-						fetch: ['StepIndex', 'Input', 'ExpectedResult'],
-						query: queryUtils.where('TestCase', '=', tc._ref),
-						order: 'StepIndex'
-					});
-
-					if (stepsResult.Results && stepsResult.Results.length > 0) {
-						testCase.Steps = stepsResult.Results.map(step => ({
-							StepIndex: step.StepIndex,
-							Input: step.Input,
-							ExpectedResult: step.ExpectedResult
-						}));
-					} else {
-						testCase.Steps = [];
-					}
-				} catch (stepError) {
-					//console.error(`Error recuperant steps per TC ${tc.FormattedID}: ${stepError.message}`);
-					testCase.Steps = [];
-					testCase.StepsError = stepError.message;
-				}
-			}
-
-			return testCase;
+		const testCases = result.Results.map(tc => ({
+			ObjectID: tc.ObjectID,
+			FormattedID: tc.FormattedID,
+			Name: tc.Name,
+			State: tc.State,
+			Description: sanitizeRichText(tc.Description),
+			Owner: tc.Owner
 		}));
 
 		return {
@@ -129,7 +105,7 @@ export async function getTestCases({query, fetchSteps = false}) {
 export const getTestCasesTool = {
 	name: 'getTestCases',
 	title: 'Get Test Cases',
-	description: 'This tool retrieves a list of all test cases for a given user story. It can optionally include the test steps for each test case.',
+	description: 'This tool retrieves a list of test cases for a given filter without the associated steps. Use the getTestCaseSteps tool to retrieve detailed steps when needed.',
 	inputSchema: {
 		query: z.object({
 			Iteration: z.string().optional().describe('The iteration ObjectID to get test cases for. Example: /iteration/12345'),
@@ -137,12 +113,7 @@ export const getTestCasesTool = {
 			Owner: z.string().optional().describe('The owner ObjectID to get test cases for. Example: /user/12345'),
 			State: z.string().optional().describe('The state of the test cases to get. Example: "Draft"'),
 			TestFolder: z.string().optional().describe('The test folder ObjectID to get test cases for. Example: /testfolder/12345')
-		}).describe('A JSON object for filtering test cases. Only Iteration, Project, Owner, State and TestFolder fields are allowed. For example: `{"Iteration": "79965788689"}` to get test cases for a specific iteration. When filtering by a related entity, always use the ObjectID of the entity instead of the name.'),
-		fetchSteps: z
-			.boolean()
-			.optional()
-			.default(false)
-			.describe('Whether to include test case steps in the response. Defaults to false. If only one test case is returned, steps are automatically included.')
+		}).describe('A JSON object for filtering test cases. Only Iteration, Project, Owner, State and TestFolder fields are allowed. For example: `{"Iteration": "79965788689"}` to get test cases for a specific iteration. When filtering by a related entity, always use the ObjectID of the entity instead of the name.')
 	},
 	annotations: {
 		readOnlyHint: true
