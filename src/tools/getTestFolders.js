@@ -7,7 +7,7 @@ export async function getTestFolders({query}) {
 	try {
 		const queryOptions = {
 			type: 'testfolder',
-			fetch: ['FormattedID', 'Name', 'Description', 'Project', 'Iteration', 'Owner', 'State', 'Parent', 'Children', 'TestCases'],
+			fetch: ['FormattedID', 'Name', 'Description', 'Project.', 'Iteration', 'Owner', 'State', 'Parent', 'TestCases'],
 		};
 
 		if (query) {
@@ -42,7 +42,6 @@ export async function getTestFolders({query}) {
 			Project: tf.Project,
 			Iteration: tf.Iteration,
 			Parent: tf.Parent,
-			Children: tf.Children,
 			TestCases: tf.TestCases
 		}));
 

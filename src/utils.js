@@ -1,10 +1,10 @@
 /*globals process */
 import rally from 'rally';
-import {mcpServer} from '../index.js';
+import {mcpServer, client, logLevel} from '../index.js';
 
-const {util: {query: queryUtils}} = rally;
+export const {util: {query: queryUtils}} = rally;
 
-const getRallyApi = () => rally({
+export const getRallyApi = () => rally({
 	apiKey: process.env.RALLY_APIKEY,
 	server: process.env.RALLY_INSTANCE,
 	requestOptions: {
@@ -20,7 +20,7 @@ const getRallyApi = () => rally({
  * Obté l'ID del projecte especificat a la variable d'entorn RALLY_PROJECT
  * @returns {Promise<string>} - L'ID del projecte
  */
-async function getProjectId() {
+export async function getProjectId() {
 	if (!process.env.RALLY_PROJECT_NAME) {
 		throw new Error('No s\'ha trobat la variable d\'entorn RALLY_PROJECT_NAME');
 	}
@@ -42,7 +42,7 @@ async function getProjectId() {
 }
 
 
-export async function log(data, logLevel = 'info') {
+export async function log(data, level = logLevel) {
 	if (typeof data === 'object') {
 		data = JSON.stringify(data);
 	}
@@ -53,11 +53,27 @@ export async function log(data, logLevel = 'info') {
 		data = '\n' + data + '\n';
 	}
 
-	try {
-		await mcpServer.server.sendLoggingMessage({level: logLevel, logger: 'MCP server', data});
-	} catch (error) {
-		console.error(error);
-	}
+			try {
+			if (clientSupportsCapability('logging')) {
+				await mcpServer.server.sendLoggingMessage({level: level, logger: 'MCP server', data});
+			}
+		} catch (error) {
+			console.error(error);
+		}
 }
 
-export {getProjectId, getRallyApi, queryUtils};
+export function clientSupportsCapability(capabilityName) {
+	switch (capabilityName) {
+		case 'resources':
+			return client.capabilities.resources;
+
+		case 'embeddedResources':
+			return client.capabilities.embeddedResources;
+
+		case 'resourceLinks':
+			return false;
+
+		default:
+			return Boolean(client.capabilities[capabilityName]);
+	}
+}

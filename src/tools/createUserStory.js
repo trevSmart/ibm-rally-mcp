@@ -104,6 +104,6 @@ export const createUserStoryTool = {
 				Iteration: z.string().optional().describe('The iteration ObjectID to associate the user story with. Example: /iteration/12345'),
 				Owner: z.string().optional().describe('The user ObjectID to associate the user story with. Example: /user/12345')
 			})
-			.describe('The user story data to create. Must include Project, Name, and Description.')
+			.describe('The user story data to create. Must include Project, Name, Owner and Description.')
 	}
 };

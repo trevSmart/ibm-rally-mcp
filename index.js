@@ -3,7 +3,7 @@ dotenv.config();
 
 import {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
 import {StdioServerTransport} from '@modelcontextprotocol/sdk/server/stdio.js';
-import {InitializeRequestSchema} from '@modelcontextprotocol/sdk/types.js';
+import {InitializeRequestSchema, SetLevelRequestSchema} from '@modelcontextprotocol/sdk/types.js';
 
 //Tools
 import {getProjectsToolDefinition, getProjectsTool} from './src/tools/getProjects.js';
@@ -20,9 +20,11 @@ import {createDefect, createDefectTool} from './src/tools/createDefect.js';
 import {createTestCase, createTestCaseTool} from './src/tools/createTestCase.js';
 import {getUsersToolDefinition, getUsersTool} from './src/tools/getUsers.js';
 import {getTestFolders, getTestFoldersTool} from './src/tools/getTestFolders.js';
+import {getTestCaseSteps, getTestCaseStepsTool} from './src/tools/getTestCaseSteps.js';
 import {createNewUserStoryPrompt, createNewUserStoryPromptDefinition} from './src/prompts/createNewUserStory.js';
 
 import {getProjects, getUserStories, getUsers} from './src/rallyServices.js';
+import {log, clientSupportsCapability} from './src/utils.js';
 
 const serverConfig = {
 	protocolVersion: '2025-06-18',
@@ -39,14 +41,16 @@ const serverConfig = {
 	}
 };
 
+export let logLevel = 'info';
+
 export const mcpServer = new McpServer(serverConfig.serverInfo, {capabilities: {}});
 
-let client = {capabilities: {}};
+export let client = {capabilities: {}};
 
 export async function sendElicitRequest(elicitationProperties) {
 	if ('elicitation' in client.capabilities) {
 		const elicitationResult = await mcpServer.server.elicitInput({
-			message: elicitationProperties.description,
+			message: elicitatcionProperties.description,
 			requestedSchema: {
 				type: 'object',
 				properties: elicitationProperties,
@@ -70,8 +74,17 @@ export let rallyData = {
 
 mcpServer.server.setRequestHandler(InitializeRequestSchema, async request => {
 	try {
-		client = request.params;
+		logLevel = process.env.LOG_LEVEL || 'info';
 
+		client = request.params;
+		log(`Client capabilities: ${JSON.stringify(client.capabilities, null, 3)}`, 'debug');
+
+		if (clientSupportsCapability('logging')) {
+			mcpServer.server.setRequestHandler(SetLevelRequestSchema, async ({params}) => {
+				logLevel = params.level;
+				return {};
+			});
+		}
 
 		return {
 			protocolVersion: serverConfig.protocolVersion,
@@ -99,6 +112,7 @@ mcpServer.registerTool('createDefect', createDefectTool, createDefect);
 mcpServer.registerTool('createTestCase', createTestCaseTool, createTestCase);
 mcpServer.registerTool('getUsers', getUsersToolDefinition, getUsersTool);
 mcpServer.registerTool('getTestFolders', getTestFoldersTool, getTestFolders);
+mcpServer.registerTool('getTestCaseSteps', getTestCaseStepsTool, getTestCaseSteps);
 
 async function startServer() {
 	try {

@@ -226,7 +226,7 @@ export async function getUserStories(query = {}, limit = null) {
 
 		const queryOptions = {
 			type: 'hierarchicalrequirement',
-			fetch: ['FormattedID', 'Name', 'Description', 'Project', 'Iteration', 'Blocked', 'TaskEstimateTotal', 'ToDo', 'Owner', 'State', 'PlanEstimate', 'TaskStatus', 'Tasks', 'TestCases', 'Defects', 'Discussion', 'ObjectID', 'c_Appgar'],
+			fetch: ['FormattedID', 'Name', 'Description', 'Iteration', 'Blocked', 'TaskEstimateTotal', 'ToDo', 'Owner', 'State', 'PlanEstimate', 'TaskStatus', 'Tasks', 'TestCases', 'Defects', 'Discussion', 'ObjectID', 'c_Appgar'],
 		};
 
 		if (limit) {

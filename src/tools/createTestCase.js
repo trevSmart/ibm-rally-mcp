@@ -1,13 +1,11 @@
+import { getRallyApi, log } from '../utils.js';
+import { rallyData } from '../../index.js';
+import { z } from 'zod';
 
-import {getRallyApi} from '../utils.js';
-import {rallyData} from '../../index.js';
-import {z} from 'zod';
-
-export async function createTestCase({testCase}) {
+export async function createTestCase({ testCase }) {
     try {
-
         //Validate required fields
-        const requiredFields = ['Name', 'UserStory', 'Steps'];
+        const requiredFields = ['Name', 'UserStory', 'Project', 'TestFolder'];
         const missingFields = requiredFields.filter(field => !testCase[field]);
 
         if (missingFields.length) {
@@ -20,8 +18,8 @@ export async function createTestCase({testCase}) {
         }
 
         //Validate that Steps is an array and has at least one step
-        if (!Array.isArray(testCase.Steps) || testCase.Steps.length === 0) {
-            throw new Error('Steps must be a non-empty array');
+        if (!Array.isArray(testCase.Steps)) {
+            testCase.Steps = [];
         }
 
         //Validate each step has required fields
@@ -31,7 +29,7 @@ export async function createTestCase({testCase}) {
             }
         });
 
-        console.error('Creating test case with data:', JSON.stringify(testCase, null, 2));
+        log(`Creating test case with data: ${JSON.stringify(testCase, null, 3)}`);
 
         const rallyApi = getRallyApi();
 
@@ -52,106 +50,119 @@ export async function createTestCase({testCase}) {
             c_Canal: 'Salesforce'
         };
 
-        //Add Project if provided
-        if (testCase.Project) {
-            testCaseData.Project = testCase.Project;
-        }
-
-        //Add Iteration if provided
-        if (testCase.Iteration) {
-            testCaseData.Iteration = testCase.Iteration;
-        }
-
-        //Add Owner if provided
-        if (testCase.Owner) {
-            testCaseData.Owner = testCase.Owner;
-        }
-
-        console.error('Creating test case with data:', JSON.stringify(testCaseData, null, 2));
+        log(`Creating test case with data: ${JSON.stringify(testCaseData, null, 3)}`);
 
         const testCaseResult = await rallyApi.create({
             type: 'testcase',
             data: testCaseData,
-            fetch: ['FormattedID', 'Name', '_ref'],
-            requestOptions: {}
+            fetch: ['FormattedID', 'Name', '_ref']
         });
 
-        const createdTestCase = testCaseResult.Object;
-        console.error(`Successfully created test case: ${createdTestCase.FormattedID} - ${createdTestCase.Name}`);
+        log(`!!!!!!`);
+        log(`Test case result: ${JSON.stringify(testCaseResult, null, 3)}`);
+        log(`!!!!!!`);
 
-        //Now create the test case steps
-        const stepPromises = testCase.Steps.map((step, index) => {
-            const stepData = {
+        const createdTestCase = testCaseResult.Object;
+        log(`Successfully created test case: ${createdTestCase.FormattedID} - ${createdTestCase.Name}`);
+
+        let createdSteps = [];
+        if (testCase.Steps.length) {
+            //Now create the test case steps in batch (up to 25 steps)
+            const stepDataArray = testCase.Steps.map((step, index) => ({
                 TestCase: createdTestCase._ref,
                 StepIndex: index + 1,
                 Input: step.Input,
                 ExpectedResult: step.ExpectedResult
-            };
+            }));
 
-            console.error(`Creating step ${index + 1} with data:`, JSON.stringify(stepData, null, 2));
+            log(`Creating ${stepDataArray.length} steps in batch with data: ${JSON.stringify(stepDataArray, null, 3)}`);
 
-            return rallyApi.create({
-                type: 'testcasestep',
-                data: stepData,
-                fetch: ['StepIndex', 'Input', 'ExpectedResult'],
-                requestOptions: {}
+            try {
+                const stepResults = await rallyApi.create({
+                    type: 'testcasestep',
+                    data: stepDataArray,
+                    fetch: ['StepIndex', 'Input', 'ExpectedResult']
+                });
+
+                log(`!!!!!!`);
+                log(`Step results: ${JSON.stringify(stepResults, null, 3)}`);
+                log(`!!!!!!`);
+
+            } catch (error) {
+                log(`Error creating test case steps: ${error}`, 'error');
+                throw error;
+            }
+
+            // Handle both single result and array of results
+            const resultsArray = Array.isArray(stepResults) ? stepResults : [stepResults];
+            createdSteps = resultsArray.map(result => {
+                const step = result.Object;
+                log(`Successfully created step ${step.StepIndex}: ${step.Input}`);
+                return {
+                    StepIndex: step.StepIndex,
+                    Input: step.Input,
+                    ExpectedResult: step.ExpectedResult
+                };
             });
-        });
-
-        const stepResults = await Promise.all(stepPromises);
-        const createdSteps = stepResults.map(result => {
-            const step = result.Object;
-            console.error(`Successfully created step ${step.StepIndex}: ${step.Input}`);
-            return {
-                StepIndex: step.StepIndex,
-                Input: step.Input,
-                ExpectedResult: step.ExpectedResult
-            };
-        });
+        }
 
         return {
+            content: [{
+                type: 'text',
+                text: JSON.stringify({TestCase: createdTestCase, Steps: createdSteps, TotalSteps: createdSteps.length}, null, 3)
+            }],
+            structuredContent: {
+                TestCase: createdTestCase,
+                Steps: createdSteps,
+                TotalSteps: createdSteps.length
+            }
+        };
+
+    } catch (error) {
+        log(`Error creating test case: ${error}`, 'error');
+        return {
+            isError: true,
             content: [
                 {
                     type: 'text',
-                    text: JSON.stringify({
-                        TestCase: {
-                            FormattedID: createdTestCase.FormattedID,
-                            Name: createdTestCase.Name,
-                            _ref: createdTestCase._ref
-                        },
-                        Steps: createdSteps,
-                        TotalSteps: createdSteps.length
-                    }, null, 2)
+                    text: `Error creating test case: ${error}`
                 }
             ]
         };
-    } catch (error) {
-        console.error('Error creating test case:', error);
-        throw error;
     }
 }
 
 export const createTestCaseTool = {
-	name: 'createTestCase',
-	title: 'Create Test Case',
-	description: 'This tool creates a new test case for a user story with N steps.',
-	inputSchema: {
-		testCase: z
-			.object({
-				Name: z.string().describe('The name of the test case. Example: "Test login functionality"'),
-				Description: z.string().optional().describe('The description of the test case. Example: "Test case to verify user login functionality"'),
-				UserStory: z.string().describe('The user story ObjectID to associate the test case with. Example: /hierarchicalrequirement/12345'),
-				Project: z.string().optional().describe('The project ObjectID to associate the test case with. Example: /project/12345'),
-				Iteration: z.string().optional().describe('The iteration ObjectID to associate the test case with. Example: /iteration/12345'),
-				Owner: z.string().describe('The user ObjectID to associate the test case with. Example: /user/12345'),
-				TestFolder: z.string().describe('The test folder ObjectID to associate the test case with. Example: /testfolder/12345'),
-				Steps: z
-					.array(z.object({
-						Input: z.string().describe('The input/action for this test step. Example: "Enter username in username field"'),
-						ExpectedResult: z.string().describe('The expected result for this test step. Example: "Username field should be populated with entered value"')
-					}))
-					.describe('An array of test case steps. Each step must have Input and ExpectedResult.')
-			})
-			.describe('The test case data to create. Must include Name, UserStory, and Steps.')
-	}
+    name: 'createTestCase',
+    title: 'Create Test Case',
+    description: 'This tool creates a new test case for a user story with N steps.',
+    inputSchema: {
+        testCase: z
+            .object({
+                Name: z.string()
+                    .describe('The name of the test case. Example: "Test login functionality"'),
+                Description: z.string()
+                    .optional()
+                    .describe('The description of the test case. Example: "Test case to verify user login functionality"'),
+                UserStory: z.string()
+                    .describe('The user story ObjectID to associate the test case with. Example: /hierarchicalrequirement/12345'),
+                Project: z.string()
+                    .describe('The project ObjectID to associate the test case with. Example: /project/12345'),
+                Iteration: z.string()
+                    .optional()
+                    .describe('The iteration ObjectID to associate the test case with. Example: /iteration/12345'),
+                Owner: z.string()
+                    .describe('The user ObjectID to associate the test case with. Example: /user/12345'),
+                TestFolder: z.string()
+                    .describe('The test folder ObjectID to associate the test case with. Example: /testfolder/12345'),
+                Steps: z
+                    .array(z.object({
+                        Input: z.string().describe('The input/action for this test step. Example: "Enter username in username field"'),
+                        ExpectedResult: z.string().describe('The expected result for this test step. Example: "Username field should be populated with entered value"')
+                    }))
+                    .optional()
+                    .describe('An array of test case steps. Each step must have Input and ExpectedResult.')
+            })
+            .describe('The test case data to create. Must include Name, UserStory and Owner.')
+    }
 };
