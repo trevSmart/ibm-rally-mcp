@@ -77,8 +77,9 @@ export async function createTestCase({ testCase }) {
 
             log(`Creating ${stepDataArray.length} steps in batch with data: ${JSON.stringify(stepDataArray, null, 3)}`);
 
+            let stepResults;
             try {
-                const stepResults = await rallyApi.create({
+                stepResults = await rallyApi.create({
                     type: 'testcasestep',
                     data: stepDataArray,
                     fetch: ['StepIndex', 'Input', 'ExpectedResult']

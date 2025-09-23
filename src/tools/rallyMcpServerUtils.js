@@ -1,4 +1,3 @@
-import {mcpServer} from '../../index.js';
 import {rallyData} from '../../index.js';
 import {z} from 'zod';
 import {log} from '../utils.js';

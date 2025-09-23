@@ -1,5 +1,4 @@
 import {getRallyApi, queryUtils} from '../utils.js';
-import {rallyData} from '../../index.js';
 import {z} from 'zod';
 
 export async function getTestCaseSteps({testCaseId}) {

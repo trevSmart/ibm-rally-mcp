@@ -1,9 +1,9 @@
 import {z} from 'zod';
 import {completable} from '@modelcontextprotocol/sdk/server/completable.js';
-import {log} from '../utils.js';
+// log is not used in this module; removing import to satisfy linting rules
 import {rallyData} from '../../index.js';
 
-export function createNewUserStoryPromptDefinition(rallyData = {}) {
+export function createNewUserStoryPromptDefinition() {
 	return {
 		title: 'Create new user story',
 		description: 'Create new user story',

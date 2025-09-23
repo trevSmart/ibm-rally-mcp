@@ -51,10 +51,10 @@ export let client = {capabilities: {}};
 export async function sendElicitRequest(elicitationProperties) {
 	if ('elicitation' in client.capabilities) {
 		const elicitationResult = await mcpServer.server.elicitInput({
-			message: elicitatcionProperties.description,
+            message: elicitationProperties.description,
 			requestedSchema: {
 				type: 'object',
-				properties: elicitationProperties,
+                properties: elicitationProperties,
 				required: ['confirmation']
 			}
 		});

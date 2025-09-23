@@ -25,33 +25,28 @@ export async function updateTask({taskRef, updates}) {
 
     const rallyApi = getRallyApi();
 
-    try {
-        const result = await rallyApi.update({
-            ref: taskRef,
-            data: updates,
-            fetch: ['FormattedID', 'Name', 'State'] //Fetch some basic fields
-        });
+    const result = await rallyApi.update({
+        ref: taskRef,
+        data: updates,
+        fetch: ['FormattedID', 'Name', 'State'] //Fetch some basic fields
+    });
 
-        const updatedObject = result.Object;
-        //console.error(`Successfully updated task: ${updatedObject.FormattedID} - ${updatedObject.Name}`);
+    const updatedObject = result.Object;
+    //console.error(`Successfully updated task: ${updatedObject.FormattedID} - ${updatedObject.Name}`);
 
-        return {
-            content: [
-                {
-                    type: 'text',
-                    text: JSON.stringify({
-                        FormattedID: updatedObject.FormattedID,
-                        Name: updatedObject.Name,
-                        State: updatedObject.State,
-                        _ref: updatedObject._ref
-                    }, null, 2)
-                }
-            ]
-        };
-    } catch (error) {
-        //console.error('Error updating task:', error);
-        throw error;
-    }
+    return {
+        content: [
+            {
+                type: 'text',
+                text: JSON.stringify({
+                    FormattedID: updatedObject.FormattedID,
+                    Name: updatedObject.Name,
+                    State: updatedObject.State,
+                    _ref: updatedObject._ref
+                }, null, 2)
+            }
+        ]
+    };
 }
 
 export const updateTaskTool = {

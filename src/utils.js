@@ -1,4 +1,4 @@
-/*globals process */
+// Removed redundant globals directive to satisfy no-redeclare for process
 import rally from 'ibm-rally-node';
 import {mcpServer, client, logLevel} from '../index.js';
 
@@ -53,7 +53,7 @@ export async function log(data, level = logLevel) {
 		data = '\n' + data + '\n';
 	}
 
-			try {
+		try {
 			if (clientSupportsCapability('logging')) {
 				await mcpServer.server.sendLoggingMessage({level: level, logger: 'MCP server', data});
 			}
