@@ -4,6 +4,19 @@ import {z} from 'zod';
 
 const stripDescriptionHtml = isTruthyEnv(process.env.STRIP_HTML_TESTCASE_DESCRIPTION);
 
+function resolveRefName(value) {
+    if (!value) {
+        return null;
+    }
+    if (typeof value === 'string') {
+        return value;
+    }
+    if (typeof value._refObjectName === 'string') {
+        return value._refObjectName;
+    }
+    return null;
+}
+
 function isTruthyEnv(value) {
 	if (typeof value !== 'string') {
 		return false;
@@ -87,10 +100,10 @@ export async function getTestCases({query}) {
 			Name: tc.Name,
 			State: tc.State,
 			Description: sanitizeRichText(tc.Description),
-			Owner: tc.Owner ? tc.Owner._refObjectName || tc.Owner : tc.Owner,
-			Project: tc.Project ? tc.Project._refObjectName || tc.Project : tc.Project,
-			Iteration: tc.Iteration ? tc.Iteration._refObjectName || tc.Iteration : tc.Iteration,
-			TestFolder: tc.TestFolder ? tc.TestFolder._refObjectName || tc.TestFolder : tc.TestFolder,
+			Owner: resolveRefName(tc.Owner),
+			Project: resolveRefName(tc.Project),
+			Iteration: resolveRefName(tc.Iteration),
+			TestFolder: resolveRefName(tc.TestFolder),
 			Objective: sanitizeRichText(tc.Objective),
 			PreConditions: sanitizeRichText(tc.PreConditions),
 			Type: tc.Type,
