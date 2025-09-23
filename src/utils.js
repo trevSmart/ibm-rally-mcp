@@ -1,5 +1,5 @@
 /*globals process */
-import rally from 'rally';
+import rally from 'ibm-rally-node';
 import {mcpServer, client, logLevel} from '../index.js';
 
 export const {util: {query: queryUtils}} = rally;

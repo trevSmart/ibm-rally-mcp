@@ -1,19 +1,48 @@
 {
-	"name": "mcp-rally-server",
+	"name": "ibm-rally-mcp",
 	"version": "1.0.0",
 	"description": "Servidor MCP lleuger per accedir a les dades de Broadcom Rally",
+	"keywords": [
+		"mcp",
+		"rally",
+		"ibm",
+		"broadcom",
+		"server",
+		"api",
+		"agile",
+		"alm"
+	],
 	"main": "index.js",
 	"type": "module",
+	"files": [
+		"index.js",
+		"src/",
+		"README.md",
+		"LICENSE"
+	],
 	"scripts": {
 		"start": "node index.js",
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"lint": "eslint ."
+		"lint": "eslint .",
+		"build": "echo \"No build step required for this project\"",
+		"prepublish": "npm run lint",
+		"prepublishOnly": "npm run lint"
 	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/trevSmart/ibm-rally-mcp.git"
+	},
+	"bugs": {
+		"url": "https://github.com/trevSmart/ibm-rally-mcp/issues"
+	},
+	"homepage": "https://github.com/trevSmart/ibm-rally-mcp",
+	"author": "trevSmart",
+	"license": "MIT",
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "^1.17.0",
 		"dotenv": "^17.2.1",
 		"node-fetch": "^3.3.2",
-		"ibm-rally-node": "^0.0.1",
+		"ibm-rally-node": "^0.0.15",
 		"zod": "^3.24.2"
 	},
 	"engines": {
@@ -25,5 +54,8 @@
 		"eslint": "^9.32.0",
 		"globals": "^16.3.0",
 		"typescript-eslint": "^8.38.0"
+	},
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com"
 	}
 }
