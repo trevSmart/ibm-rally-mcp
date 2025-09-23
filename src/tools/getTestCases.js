@@ -4,6 +4,19 @@ import {z} from 'zod';
 
 const stripDescriptionHtml = isTruthyEnv(process.env.STRIP_HTML_TESTCASE_DESCRIPTION);
 
+function resolveRefName(value) {
+    if (!value) {
+        return null;
+    }
+    if (typeof value === 'string') {
+        return value;
+    }
+    if (typeof value._refObjectName === 'string') {
+        return value._refObjectName;
+    }
+    return null;
+}
+
 function isTruthyEnv(value) {
 	if (typeof value !== 'string') {
 		return false;
@@ -49,11 +62,18 @@ export async function getTestCases({query}) {
 
 		const queryOptions = {
 			type: 'testcase',
-			fetch: ['FormattedID', 'Name', 'Description', 'Project', 'Iteration', 'State',, 'Objective', 'PreConditions', 'Type', 'Priority', 'c_APPGAR', 'c_Canal'],
+			fetch: ['FormattedID', 'Name', 'Description', 'Project', 'Iteration', 'State', 'Owner', 'Objective', 'PreConditions', 'Type', 'Priority', 'c_APPGAR', 'c_Canal', 'TestFolder'],
 		};
 
 		if (query) {
-			const rallyQueries = Object.keys(query).map( key => queryUtils.where(key, '=', query[key]));
+			const rallyQueries = Object.keys(query).map(key => {
+				//Per al camp Name, utilitzem 'contains' per fer cerca parcial
+				if (key === 'Name') {
+					return queryUtils.where(key, 'contains', query[key]);
+				}
+				//Per a altres camps, mantenim la cerca exacta
+				return queryUtils.where(key, '=', query[key]);
+			});
 
 			if (rallyQueries.length) {
 				queryOptions.query = rallyQueries.reduce((a, b) => a.and(b));
@@ -80,7 +100,16 @@ export async function getTestCases({query}) {
 			Name: tc.Name,
 			State: tc.State,
 			Description: sanitizeRichText(tc.Description),
-			Owner: tc.Owner
+			Owner: resolveRefName(tc.Owner),
+			Project: resolveRefName(tc.Project),
+			Iteration: resolveRefName(tc.Iteration),
+			TestFolder: resolveRefName(tc.TestFolder),
+			Objective: sanitizeRichText(tc.Objective),
+			PreConditions: sanitizeRichText(tc.PreConditions),
+			Type: tc.Type,
+			Priority: tc.Priority,
+			c_APPGAR: tc.c_APPGAR,
+			c_Canal: tc.c_Canal
 		}));
 
 		return {
@@ -112,8 +141,14 @@ export const getTestCasesTool = {
 			Project: z.string().optional().describe('The project ObjectID to get test cases for. Example: /project/12345'),
 			Owner: z.string().optional().describe('The owner ObjectID to get test cases for. Example: /user/12345'),
 			State: z.string().optional().describe('The state of the test cases to get. Example: "Draft"'),
-			TestFolder: z.string().optional().describe('The test folder ObjectID to get test cases for. Example: /testfolder/12345')
-		}).describe('A JSON object for filtering test cases. Only Iteration, Project, Owner, State and TestFolder fields are allowed. For example: `{"Iteration": "79965788689"}` to get test cases for a specific iteration. When filtering by a related entity, always use the ObjectID of the entity instead of the name.')
+			TestFolder: z.string().optional().describe('The test folder ObjectID to get test cases for. Example: /testfolder/12345'),
+			Name: z.string().optional().describe('The name of the test case to search for. Supports partial matching.'),
+			FormattedID: z.string().optional().describe('The formatted ID of the test case to get. Example: "TC123"'),
+			Type: z.string().optional().describe('The type of the test case to get. Example: "Functional"'),
+			Priority: z.string().optional().describe('The priority of the test case to get. Example: "High"'),
+			c_APPGAR: z.string().optional().describe('Custom field c_APPGAR value to filter by'),
+			c_Canal: z.string().optional().describe('Custom field c_Canal value to filter by')
+		}).describe('A JSON object for filtering test cases. Fields available: Iteration, Project, Owner, State, TestFolder, Name, FormattedID, Type, Priority, c_APPGAR, c_Canal. For example: `{"Iteration": "79965788689"}` to get test cases for a specific iteration. When filtering by a related entity, always use the ObjectID of the entity instead of the name.')
 	},
 	annotations: {
 		readOnlyHint: true

@@ -5,9 +5,21 @@ export async function getTestFolders({query}) {
 	const rallyApi = getRallyApi();
 
 	try {
+		function resolveRefName(value) {
+			if (!value) {
+				return null;
+			}
+			if (typeof value === 'string') {
+				return value;
+			}
+			if (typeof value._refObjectName === 'string') {
+				return value._refObjectName;
+			}
+			return null;
+		}
 		const queryOptions = {
 			type: 'testfolder',
-			fetch: ['FormattedID', 'Name', 'Description', 'Iteration', 'State', 'Parent'],
+			fetch: ['FormattedID', 'Name', 'Description', 'Iteration', 'State', 'Parent', 'Owner', 'Project', 'TestCases'],
 		};
 
 		// Project is mandatory - add it to the query
@@ -47,10 +59,10 @@ export async function getTestFolders({query}) {
 			Name: tf.Name,
 			State: tf.State,
 			Description: tf.Description,
-			Owner: tf.Owner,
-			Project: tf.Project,
-			Iteration: tf.Iteration,
-			Parent: tf.Parent,
+			Owner: resolveRefName(tf.Owner),
+			Project: resolveRefName(tf.Project),
+			Iteration: resolveRefName(tf.Iteration),
+			Parent: resolveRefName(tf.Parent),
 			TestCases: tf.TestCases
 		}));
 
