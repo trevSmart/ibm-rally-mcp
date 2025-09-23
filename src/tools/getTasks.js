@@ -32,6 +32,7 @@ export async function getTasks({query}) {
 
 		const tasks = result.Results.map(task => ({
 			ObjectID: task.ObjectID,
+			FormattedID: task.FormattedID,
 			Name: task.Name,
 			State: task.State,
 			Estimate: task.Estimate,

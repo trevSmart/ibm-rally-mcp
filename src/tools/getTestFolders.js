@@ -7,7 +7,7 @@ export async function getTestFolders({query}) {
 	try {
 		const queryOptions = {
 			type: 'testfolder',
-			fetch: ['FormattedID', 'Name', 'Description', 'Iteration', 'State', 'Parent'],
+			fetch: ['FormattedID', 'Name', 'Description', 'Iteration', 'State', 'Parent', 'Owner', 'Project', 'TestCases'],
 		};
 
 		// Project is mandatory - add it to the query
@@ -47,10 +47,10 @@ export async function getTestFolders({query}) {
 			Name: tf.Name,
 			State: tf.State,
 			Description: tf.Description,
-			Owner: tf.Owner,
-			Project: tf.Project,
-			Iteration: tf.Iteration,
-			Parent: tf.Parent,
+			Owner: tf.Owner ? tf.Owner._refObjectName || tf.Owner : tf.Owner,
+			Project: tf.Project ? tf.Project._refObjectName || tf.Project : tf.Project,
+			Iteration: tf.Iteration ? tf.Iteration._refObjectName || tf.Iteration : tf.Iteration,
+			Parent: tf.Parent ? tf.Parent._refObjectName || tf.Parent : tf.Parent,
 			TestCases: tf.TestCases
 		}));
 
