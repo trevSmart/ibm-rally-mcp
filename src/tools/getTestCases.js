@@ -42,7 +42,10 @@ function stripHtmlTags(value) {
 	const withNewlines = value
 		.replace(/<\s*br\s*\/?\s*>/gi, '\n')
 		.replace(/<\/(?:p|div|li|ul|ol|table|tr|td|th|h[1-6])\s*>/gi, '\n');
-	const withoutTags = withNewlines.replace(/<[^>]*>/g, '');
+	let withoutTags = withNewlines;
+	while (/<[^>]*>/g.test(withoutTags)) {
+		withoutTags = withoutTags.replace(/<[^>]*>/g, '');
+	}
 	return decodeBasicEntities(withoutTags)
 		.replace(/\r?\n{3,}/g, '\n\n')
 		.trim();
