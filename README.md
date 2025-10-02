@@ -8,13 +8,30 @@ Servidor MCP que exposa dades de Broadcom Rally a través del Model Context Prot
 - Un compte de Broadcom Rally amb permisos sobre el workspace/projecte a consultar
 - Una clau API de Rally (personal access token)
 
-## Configuració
+## Instal·lació
 
-1. Instal·la les dependències:
+### Des de npm (recomanat)
+
+```bash
+npm install -g ibm-rally-mcp
+```
+
+### Des del codi font
+
+1. Clona el repositori:
+   ```bash
+   git clone https://github.com/trevSmart/ibm-rally-mcp.git
+   cd ibm-rally-mcp
+   ```
+
+2. Instal·la les dependències:
    ```bash
    npm install
    ```
-2. Crea un fitxer `.env` a l'arrel amb les variables necessàries:
+
+## Configuració
+
+1. Crea un fitxer `.env` a l'arrel amb les variables necessàries:
    ```dotenv
    RALLY_INSTANCE=https://eu1.rallydev.com
    RALLY_APIKEY=pat-xxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -23,11 +40,16 @@ Servidor MCP que exposa dades de Broadcom Rally a través del Model Context Prot
    STRIP_HTML_TESTCASE_DESCRIPTION=true # Opcional: activa la neteja d'HTML a les descripcions
    ```
    > No comparteixis ni versionis mai valors reals de les credencials.
-3. Inicia el servidor MCP:
+
+2. Inicia el servidor MCP:
    ```bash
+   # Si l'has instal·lat globalment des de npm:
+   ibm-rally-mcp
+   
+   # Si l'has instal·lat des del codi font:
    npm start
    ```
-4. Connecta el teu client MCP (per exemple Cursor, Claude Desktop o scripts propis) utilitzant el transport STDIO.
+3. Connecta el teu client MCP (per exemple Cursor, Claude Desktop o scripts propis) utilitzant el transport STDIO.
 
 ## Estructura principal
 
