@@ -4,7 +4,8 @@ import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 jest.mock('../../index.js', () => ({
   mcpServer: {
     sendResourceListChanged: jest.fn()
-  }
+  },
+  log: jest.fn()
 }));
 
 // Mock del módulo rallyServices.js
@@ -20,7 +21,7 @@ jest.mock('../../src/utils.js', () => ({
 import { getCurrentDate, getCurrentDateTool } from '../../src/tools/getCurrentDate.js';
 import { getProjectsTool, getProjectsToolDefinition } from '../../src/tools/getProjects.js';
 import { getProjects } from '../../src/rallyServices.js';
-import { log } from '../../src/utils.js';
+import { log } from '../../index.js';
 
 describe('Tools', () => {
   beforeEach(() => {
