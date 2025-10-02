@@ -1,4 +1,5 @@
-import { getRallyApi, log } from '../utils.js';
+import { getRallyApi } from '../utils.js';
+import { log } from '../../index.js';
 import { rallyData } from '../../index.js';
 import { z } from 'zod';
 

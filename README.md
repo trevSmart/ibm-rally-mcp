@@ -45,7 +45,7 @@ npm install -g ibm-rally-mcp
    ```bash
    # Si l'has instal·lat globalment des de npm:
    ibm-rally-mcp
-   
+
    # Si l'has instal·lat des del codi font:
    npm start
    ```

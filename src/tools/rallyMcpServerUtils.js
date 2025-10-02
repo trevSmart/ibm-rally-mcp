@@ -1,6 +1,6 @@
 import {rallyData} from '../../index.js';
 import {z} from 'zod';
-import {log} from '../utils.js';
+import {log} from '../../index.js';
 
 export async function rallyMcpServerUtilsTool({action}) {
 	try {

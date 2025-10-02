@@ -27,7 +27,48 @@ import {rallyMcpServerUtilsToolDefinition, rallyMcpServerUtilsTool} from './src/
 import {createNewUserStoryPrompt, createNewUserStoryPromptDefinition} from './src/prompts/createNewUserStory.js';
 
 import {getProjects, getUserStories, getUsers} from './src/rallyServices.js';
-import {log, clientSupportsCapability} from './src/utils.js';
+// Logging functions moved here to avoid circular dependencies
+let mcpServerInstance = null;
+let clientInstance = null;
+let logLevelInstance = 'info';
+
+export async function log(data, level = logLevelInstance) {
+	if (typeof data === 'object') {
+		data = JSON.stringify(data);
+	}
+	if (typeof data === 'string') {
+		if (data.length > 4000) {
+			data = data.slice(0, 3997) + '...';
+		}
+		data = '\n' + data + '\n';
+	}
+
+	try {
+		if (clientSupportsCapability('logging')) {
+			await mcpServerInstance.server.sendLoggingMessage({level: level, logger: 'MCP server', data});
+		}
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+export function clientSupportsCapability(capabilityName) {
+	if (!clientInstance) return false;
+
+	switch (capabilityName) {
+		case 'resources':
+			return clientInstance.capabilities.resources;
+
+		case 'embeddedResources':
+			return clientInstance.capabilities.embeddedResources;
+
+		case 'resourceLinks':
+			return false;
+
+		default:
+			return Boolean(clientInstance.capabilities[capabilityName]);
+	}
+}
 
 const serverConfig = {
 	protocolVersion: '2025-06-18',
@@ -78,15 +119,18 @@ export let rallyData = {
 mcpServer.server.setRequestHandler(InitializeRequestSchema, async request => {
 	try {
 		logLevel = process.env.LOG_LEVEL || 'info';
+		logLevelInstance = logLevel;
 
 		client = request.params;
+		clientInstance = client;
 		log(`Client capabilities: ${JSON.stringify(client.capabilities, null, 3)}`, 'debug');
 
 		if (clientSupportsCapability('logging')) {
-			mcpServer.server.setRequestHandler(SetLevelRequestSchema, async ({params}) => {
-				logLevel = params.level;
-				return {};
-			});
+		mcpServer.server.setRequestHandler(SetLevelRequestSchema, async ({params}) => {
+			logLevel = params.level;
+			logLevelInstance = logLevel;
+			return {};
+		});
 		}
 
 		return {

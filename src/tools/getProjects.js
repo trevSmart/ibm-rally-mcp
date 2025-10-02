@@ -1,7 +1,7 @@
 import {mcpServer} from '../../index.js';
 import {getProjects} from '../rallyServices.js';
 import {z} from 'zod';
-import {log} from '../utils.js';
+import {log} from '../../index.js';
 
 export async function getProjectsTool({query = {}}) {
 	try {
