@@ -64,7 +64,7 @@ export async function getProjects(query = {}, limit = null) {
 			ObjectID: project.ObjectID,
 			Name: project.Name,
 			Description: typeof project.Description === 'string'
-				? project.Description.replace(/<[^>]*>/g, '')
+				? sanitizeHtml(project.Description, { allowedTags: [], allowedAttributes: {} })
 				: project.Description,
 			State: project.State,
 			CreationDate: project.CreationDate,

@@ -26,12 +26,13 @@ function isTruthyEnv(value) {
 function decodeBasicEntities(value) {
 	return value
 		.replace(/&nbsp;/gi, ' ')
-		.replace(/&amp;/gi, '&')
 		.replace(/&lt;/gi, '<')
 		.replace(/&gt;/gi, '>')
 		.replace(/&#39;/gi, "'")
 		.replace(/&apos;/gi, "'")
-		.replace(/&quot;/gi, '"');
+		.replace(/&quot;/gi, '"')
+		// Decode ampersand last to avoid enabling a second decoding pass
+		.replace(/&amp;/gi, '&');
 }
 
 function stripHtmlTags(value) {
