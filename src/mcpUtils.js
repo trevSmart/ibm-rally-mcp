@@ -35,3 +35,4 @@ export function clientSupportsCapability(capabilityName) {
 			return Boolean(client.capabilities[capabilityName]);
 	}
 }
+

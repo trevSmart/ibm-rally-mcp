@@ -19,6 +19,8 @@ import {getCurrentDate, getCurrentDateTool} from './src/tools/getCurrentDate.js'
 import {updateTask, updateTaskTool} from './src/tools/updateTask.js';
 import {createUserStory, createUserStoryTool} from './src/tools/createUserStory.js';
 import {createDefect, createDefectTool} from './src/tools/createDefect.js';
+import {getDefects, getDefectsToolDefinition} from './src/tools/getDefects.js';
+import {updateDefect, updateDefectToolDefinition} from './src/tools/updateDefect.js';
 import {createTestCase, createTestCaseTool} from './src/tools/createTestCase.js';
 import {getUsersToolDefinition, getUsersTool} from './src/tools/getUsers.js';
 import {getTestFolders, getTestFoldersTool} from './src/tools/getTestFolders.js';
@@ -87,7 +89,11 @@ const serverConfig = {
 
 export let logLevel = 'info';
 
-export const mcpServer = new McpServer(serverConfig.serverInfo, {capabilities: {}});
+export const mcpServer = new McpServer(serverConfig.serverInfo, {
+	capabilities: {},
+	instructions: 'This is a MCP server for working with Broadcom Rally. Always respond in the same language as the user.',
+	debouncedNotificationMethods: ['notifications/tools/list_changed', 'notifications/resources/list_changed', 'notifications/prompts/list_changed']}
+);
 
 export let client = {capabilities: {}};
 
@@ -156,6 +162,8 @@ mcpServer.registerTool('getCurrentDate', getCurrentDateTool, getCurrentDate);
 mcpServer.registerTool('updateTask', updateTaskTool, updateTask);
 mcpServer.registerTool('createUserStory', createUserStoryTool, createUserStory);
 mcpServer.registerTool('createDefect', createDefectTool, createDefect);
+mcpServer.registerTool('getDefects', getDefectsToolDefinition, getDefects);
+mcpServer.registerTool('updateDefect', updateDefectToolDefinition, updateDefect);
 mcpServer.registerTool('createTestCase', createTestCaseTool, createTestCase);
 mcpServer.registerTool('getUsers', getUsersToolDefinition, getUsersTool);
 mcpServer.registerTool('getTestFolders', getTestFoldersTool, getTestFolders);
