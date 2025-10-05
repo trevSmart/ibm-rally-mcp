@@ -21,7 +21,16 @@ export async function getDefects({query, project}) {
 		// Add additional query filters if provided
 		if (query && Object.keys(query).length > 0) {
 			Object.keys(query).forEach(key => {
-				rallyQueries.push(queryUtils.where(key, '=', query[key]));
+				// ObjectID is a numeric field in Rally API, convert string to number
+				if (key === 'ObjectID') {
+					const objectIdValue = parseInt(query[key], 10);
+					if (isNaN(objectIdValue)) {
+						throw new Error(`Invalid ObjectID value: ${query[key]}. ObjectID must be a valid number.`);
+					}
+					rallyQueries.push(queryUtils.where(key, '=', objectIdValue));
+				} else {
+					rallyQueries.push(queryUtils.where(key, '=', query[key]));
+				}
 			});
 		}
 

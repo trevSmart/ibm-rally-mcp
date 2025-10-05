@@ -65,7 +65,7 @@ describe('getDefects', () => {
 
 		// Verify queryUtils.where was called for both Project and ObjectID
 		expect(mockWhere).toHaveBeenCalledWith('Project', '=', '/project/12345');
-		expect(mockWhere).toHaveBeenCalledWith('ObjectID', '=', '82742517605');
+		expect(mockWhere).toHaveBeenCalledWith('ObjectID', '=', 82742517605);
 		expect(mockWhere).toHaveBeenCalledTimes(2);
 	});
 
@@ -129,7 +129,7 @@ describe('getDefects', () => {
 
 		// Verify queryUtils.where was called for all filters
 		expect(mockWhere).toHaveBeenCalledWith('Project', '=', '/project/12345');
-		expect(mockWhere).toHaveBeenCalledWith('ObjectID', '=', '82742517605');
+		expect(mockWhere).toHaveBeenCalledWith('ObjectID', '=', 82742517605);
 		expect(mockWhere).toHaveBeenCalledWith('State', '=', 'Open');
 		expect(mockWhere).toHaveBeenCalledWith('Severity', '=', 'High');
 		expect(mockWhere).toHaveBeenCalledTimes(4);
@@ -163,5 +163,15 @@ describe('getDefects', () => {
 
 		expect(result.isError).toBe(true);
 		expect(result.content[0].text).toContain('Error en getDefects: API Error');
+	});
+
+	it('should handle invalid ObjectID values', async () => {
+		const result = await getDefects({
+			query: { ObjectID: 'invalid' },
+			project: '/project/12345'
+		});
+
+		expect(result.isError).toBe(true);
+		expect(result.content[0].text).toContain('Invalid ObjectID value');
 	});
 });
