@@ -1,4 +1,4 @@
-import {getRallyApi} from '../utils.js';
+import {getRallyApi, queryUtils} from '../utils.js';
 import {z} from 'zod';
 
 export async function getDefects({query, project}) {
@@ -8,21 +8,27 @@ export async function getDefects({query, project}) {
 		// Build the query parameters
 		const queryParams = {
 			type: 'defect',
-			fetch: ['FormattedID', 'Name', 'State', 'Severity', 'Priority', 'Description', 'Owner', 'Project', 'Iteration', 'CreationDate', 'LastUpdateDate'],
+			fetch: ['ObjectID', 'FormattedID', 'Name', 'State', 'Severity', 'Priority', 'Description', 'Owner', 'Project', 'Iteration', 'CreationDate', 'LastUpdateDate'],
 			limit: 200
 		};
 
-		// Build query filters - always include project filter
-		const queryFilters = {
-			Project: project
-		};
+		// Build query filters using queryUtils.where() for proper filtering
+		const rallyQueries = [];
+		
+		// Always include project filter
+		rallyQueries.push(queryUtils.where('Project', '=', project));
 
 		// Add additional query filters if provided
 		if (query && Object.keys(query).length > 0) {
-			Object.assign(queryFilters, query);
+			Object.keys(query).forEach(key => {
+				rallyQueries.push(queryUtils.where(key, '=', query[key]));
+			});
 		}
 
-		queryParams.query = queryFilters;
+		// Combine all queries with AND
+		if (rallyQueries.length > 0) {
+			queryParams.query = rallyQueries.reduce((a, b) => a.and(b));
+		}
 
 		const result = await rallyApi.query(queryParams);
 
@@ -37,6 +43,7 @@ export async function getDefects({query, project}) {
 
 		// Format the results
 		const defects = result.Results.map(defect => ({
+			ObjectID: defect.ObjectID,
 			FormattedID: defect.FormattedID,
 			Name: defect.Name,
 			State: defect.State,
