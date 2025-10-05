@@ -1,5 +1,6 @@
 import {getRallyApi, queryUtils} from './utils.js';
 import {rallyData} from '../index.js';
+import sanitizeHtml from 'sanitize-html';
 
 export async function getProjects(query = {}, limit = null) {
 	const rallyApi = getRallyApi();
@@ -286,7 +287,7 @@ export async function getUserStories(query = {}, limit = null) {
 			FormattedID: userStory.FormattedID,
 			Name: userStory.Name,
 			Description: typeof userStory.Description === 'string'
-				? userStory.Description.replace(/<[^>]*>/g, '')
+				? sanitizeHtml(userStory.Description, { allowedTags: [], allowedAttributes: {} })
 				: userStory.Description,
 			State: userStory.State,
 			PlanEstimate: userStory.PlanEstimate,
