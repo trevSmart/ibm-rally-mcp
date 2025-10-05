@@ -174,4 +174,48 @@ describe('getDefects', () => {
 		expect(result.isError).toBe(true);
 		expect(result.content[0].text).toContain('Invalid ObjectID value');
 	});
+
+	it('should reject ObjectID with partial numbers', async () => {
+		const result = await getDefects({
+			query: { ObjectID: '123abc' },
+			project: '/project/12345'
+		});
+
+		expect(result.isError).toBe(true);
+		expect(result.content[0].text).toContain('Invalid ObjectID value');
+	});
+
+	it('should reject negative ObjectID values', async () => {
+		const result = await getDefects({
+			query: { ObjectID: '-123' },
+			project: '/project/12345'
+		});
+
+		expect(result.isError).toBe(true);
+		expect(result.content[0].text).toContain('Invalid ObjectID value');
+	});
+
+	it('should reject ObjectID values outside safe integer range', async () => {
+		const result = await getDefects({
+			query: { ObjectID: '9007199254740992' }, // Number.MAX_SAFE_INTEGER + 1
+			project: '/project/12345'
+		});
+
+		expect(result.isError).toBe(true);
+		expect(result.content[0].text).toContain('outside the safe integer range');
+	});
+
+	it('should handle ObjectID with leading/trailing whitespace', async () => {
+		mockQuery.mockResolvedValue({
+			Results: []
+		});
+
+		await getDefects({
+			query: { ObjectID: '  82742517605  ' },
+			project: '/project/12345'
+		});
+
+		// Should trim and convert to number
+		expect(mockWhere).toHaveBeenCalledWith('ObjectID', '=', 82742517605);
+	});
 });

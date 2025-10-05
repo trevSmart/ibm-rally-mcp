@@ -23,9 +23,15 @@ export async function getDefects({query, project}) {
 			Object.keys(query).forEach(key => {
 				// ObjectID is a numeric field in Rally API, convert string to number
 				if (key === 'ObjectID') {
-					const objectIdValue = parseInt(query[key], 10);
-					if (isNaN(objectIdValue)) {
-						throw new Error(`Invalid ObjectID value: ${query[key]}. ObjectID must be a valid number.`);
+					// Strict validation: ensure the entire string is a valid integer
+					const stringValue = String(query[key]).trim();
+					if (!/^\d+$/.test(stringValue)) {
+						throw new Error(`Invalid ObjectID value: ${query[key]}. ObjectID must be a valid positive integer.`);
+					}
+					const objectIdValue = Number(stringValue);
+					// Check for safe integer range to avoid precision loss
+					if (!Number.isSafeInteger(objectIdValue)) {
+						throw new Error(`Invalid ObjectID value: ${query[key]}. ObjectID is outside the safe integer range.`);
 					}
 					rallyQueries.push(queryUtils.where(key, '=', objectIdValue));
 				} else {
