@@ -63,7 +63,7 @@ npm install -g ibm-rally-mcp
 
 Les principals tools registrades al servidor són:
 
-- `getProjects`, `getIterations`, `getUsers`, `getUserStories`, `getTasks`: consultes bàsiques d'artefactes.
+- `getProjects`, `getIterations`, `getUsers`, `getUserStories`, `getTasks`, `getDefects`: consultes bàsiques d'artefactes.
 - `createUserStory`, `createDefect`, `createTestCase`, `createUserStoryTasks`, `updateTask`: operacions de creació/actualització.
 - `getTestCases`, `getTestCaseSteps`, `getTestFolders`: recursos relacionats amb QA.
 - `getTypeDefinition`, `getCurrentDate`: utilitats complementàries.
@@ -96,6 +96,10 @@ node createTestCaseScript.js
 
 - Les respostes de certes tools poden contenir molta informació; utilitza filtres (`query`) per limitar el volum retornat.
 - El filtratge de test cases només accepta camps específics (`Iteration`, `Project`, `Owner`, `State`, `TestFolder`).
+
+## Notas sobre filtres
+
+- **ObjectID**: Quan filtres per `ObjectID` a `getDefects` o altres tools, el valor es converteix automàticament de string a número per garantir la compatibilitat amb l'API de Rally. Això assegura que el filtratge exacte funcioni correctament.
 
 ## Llicència
 
