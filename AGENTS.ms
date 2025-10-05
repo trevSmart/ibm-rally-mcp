@@ -25,6 +25,11 @@ Aquesta secció descriu totes les tools MCP disponibles al servidor. Cada agent 
 - **Fitxer**: `src/tools/getUsers.js`
 - **Objectiu**: Llistar usuaris de Rally. Filtrat principal per `DisplayName`, `UserName` o `ObjectID`.
 
+### getDefects
+- **Fitxer**: `src/tools/getDefects.js`
+- **Objectiu**: Recuperar defectes filtrats per diversos camps (`State`, `Severity`, `Priority`, `ObjectID`, etc.). Important: el camp `ObjectID` es converteix automàticament a número per garantir que la cerca exacta funcioni correctament amb l'API de Rally.
+- **Filtres suportats**: `ObjectID` (número, es converteix automàticament), `State`, `Severity`, `Priority`, i qualsevol altre camp estàndard de Defect.
+
 ### getTestCases
 - **Fitxer**: `src/tools/getTestCases.js`
 - **Objectiu**: Recuperar test cases. Accepta filtres per `Iteration`, `Project`, `Owner`, `State` i `TestFolder`. Si la variable d'entorn `STRIP_HTML_TESTCASE_DESCRIPTION` està activada, neteja el camp `Description` d'HTML. Els passos s'han de consultar amb la tool `getTestCaseSteps`.
