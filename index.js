@@ -76,7 +76,8 @@ const serverConfig = {
 	protocolVersion: '2025-06-18',
 	serverInfo: {
 		name: 'rally-mcp',
-		version: '1.0.0'
+		version: '1.0.0',
+		icons: [{ src: './mcp.svg', sizes: ['64x64'], mimeType: 'src/assets/icon.png' }]
 	},
 	capabilities: {
 		logging: {},
