@@ -33,7 +33,29 @@ export async function updateTestCaseStep({ stepId, testCaseId, stepIndex, Input,
 
 			// Get the test case info
 			const testCaseRef = existingStep.TestCase._ref || existingStep.TestCase;
-			const testCaseId = testCaseRef.split('/').pop();
+			let testCaseId = null;
+			if (typeof testCaseRef === 'string') {
+				const match = testCaseRef.match(/(\d+)$/);
+				if (match) {
+					testCaseId = match[1];
+				} else {
+					return {
+						isError: true,
+						content: [{
+							type: 'text',
+							text: `Error: Could not extract test case ID from reference: ${testCaseRef}`
+						}]
+					};
+				}
+			} else {
+				return {
+					isError: true,
+					content: [{
+						type: 'text',
+						text: `Error: Test case reference is not a string: ${testCaseRef}`
+					}]
+				};
+			}
 			
 			const testCaseResult = await rallyApi.query({
 				type: 'testcase',
