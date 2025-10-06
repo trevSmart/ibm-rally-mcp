@@ -1,6 +1,17 @@
 #!/usr/bin/env node
 
 import dotenv from 'dotenv';
+
+// Ensure any library that relies on console.log/info/debug writes to stderr so MCP JSON stays on stdout
+const originalConsoleError = console.error.bind(console);
+const redirectStdoutToStderr = (...args) => {
+	originalConsoleError(...args);
+};
+
+console.log = redirectStdoutToStderr;
+console.info = redirectStdoutToStderr;
+console.debug = redirectStdoutToStderr;
+
 dotenv.config();
 
 import {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
