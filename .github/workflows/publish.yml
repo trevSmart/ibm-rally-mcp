@@ -82,9 +82,10 @@ jobs:
         run: |
           # Check if NPM_TOKEN is available
           if [ -z "$NODE_AUTH_TOKEN" ]; then
-            echo "NPM_TOKEN secret is not configured. Skipping npm publication."
+            echo "❌ NPM_TOKEN secret is not configured. npm publication is required."
             echo "To enable npm publishing, add NPM_TOKEN secret to repository settings."
-            exit 0
+            echo "This step will fail to ensure proper package publication."
+            exit 1
           fi
 
           # Temporarily modify package.json for npm publication
@@ -116,7 +117,7 @@ jobs:
       - name: Publish to GitHub Packages
         if: success()
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           # Restore publishConfig for GitHub Packages
           node -e "
