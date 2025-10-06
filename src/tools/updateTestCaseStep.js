@@ -31,13 +31,13 @@ export async function updateTestCaseStep({ stepId, testCaseId, stepIndex, Input,
 			existingStep = stepResult.Results[0];
 			stepRef = existingStep._ref;
 
-			// Get the test case info
+			// Extract test case ID from the step's TestCase reference to fetch full test case details
 			const testCaseRef = existingStep.TestCase._ref || existingStep.TestCase;
-			let testCaseId = null;
+			let extractedTestCaseId = null;
 			if (typeof testCaseRef === 'string') {
 				const match = testCaseRef.match(/(\d+)$/);
 				if (match) {
-					testCaseId = match[1];
+					extractedTestCaseId = match[1];
 				} else {
 					return {
 						isError: true,
@@ -57,10 +57,11 @@ export async function updateTestCaseStep({ stepId, testCaseId, stepIndex, Input,
 				};
 			}
 			
+			// Fetch full test case details (FormattedID, Name) which are not included in the step query
 			const testCaseResult = await rallyApi.query({
 				type: 'testcase',
 				fetch: ['ObjectID', 'FormattedID', 'Name'],
-				query: queryUtils.where('ObjectID', '=', testCaseId)
+				query: queryUtils.where('ObjectID', '=', extractedTestCaseId)
 			});
 
 			if (testCaseResult.Results && testCaseResult.Results.length > 0) {
