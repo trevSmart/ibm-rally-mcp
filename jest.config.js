@@ -12,5 +12,9 @@ export default {
   verbose: true,
   transform: {
     '^.+\\.js$': 'babel-jest'
-  }
+  },
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(ibm-rally-node)/)'
+  ]
 };

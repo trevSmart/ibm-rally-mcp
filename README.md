@@ -32,6 +32,11 @@ npm install -g ibm-rally-mcp
 ## Configuració
 
 1. Crea un fitxer `.env` a l'arrel amb les variables necessàries:
+   ```bash
+   cp .env.example .env
+   ```
+
+   Edita el fitxer `.env` amb les teves credencials:
    ```dotenv
    RALLY_INSTANCE=https://eu1.rallydev.com
    RALLY_APIKEY=pat-xxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -85,6 +90,40 @@ Al directori `tmp/` hi ha un script demostratiu (`createTestCaseScript.js`) que 
 cd tmp
 node createTestCaseScript.js
 ```
+
+## Testing
+
+Abans d'executar els tests, assegura't que el fitxer `.env` estigui configurat correctament:
+
+```bash
+# Executar tots els tests
+npm test
+
+# Executar tests en mode watch
+npm run test:watch
+
+# Executar tests amb cobertura
+npm run test:coverage
+
+# Executar tests per CI (exclou tests d'integració)
+npm run test:ci
+```
+
+Els tests carreguen automàticament les variables d'entorn des del fitxer `.env` abans d'executar-se.
+
+### Configuració per GitHub Actions
+
+Per executar els tests a GitHub Actions, configura les següents variables i secrets al repositori:
+
+**Secrets** (Settings → Secrets and variables → Actions → Secrets):
+- `RALLY_APIKEY`: La teva clau API de Rally
+
+**Variables** (Settings → Secrets and variables → Actions → Variables):
+- `RALLY_INSTANCE`: URL de la instància de Rally (ex: `https://eu1.rallydev.com`)
+- `RALLY_PROJECT_NAME`: Nom del projecte per defecte
+- `STRIP_HTML_TESTCASE_DESCRIPTION`: `true` o `false` per activar la neteja d'HTML
+
+Els workflows de CI i publicació ja estan configurats per utilitzar aquestes variables automàticament.
 
 ## Desenvolupament
 

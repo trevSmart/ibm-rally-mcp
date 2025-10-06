@@ -37,4 +37,10 @@ jobs:
       run: npm run lint
 
     - name: Run tests
+      env:
+        RALLY_APIKEY: ${{ secrets.RALLY_APIKEY }}
+        RALLY_INSTANCE: ${{ vars.RALLY_INSTANCE }}
+        RALLY_PROJECT_NAME: ${{ vars.RALLY_PROJECT_NAME }}
+        STRIP_HTML_TESTCASE_DESCRIPTION: ${{ vars.STRIP_HTML_TESTCASE_DESCRIPTION }}
+        LOG_LEVEL: info
       run: npm run test:ci
