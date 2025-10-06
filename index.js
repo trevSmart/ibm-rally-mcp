@@ -48,8 +48,9 @@ export async function log(data, level = logLevelInstance) {
 	}
 
 	try {
+		data = '👁🐝Ⓜ️ ' + data;
 		if (mcpServerInstance?.isConnected() && clientSupportsCapability('logging')) {
-			await mcpServerInstance.server.sendLoggingMessage({level: level, logger: 'MCP server', data});
+			await mcpServerInstance.server.sendLoggingMessage({level, logger: 'MCP server', data});
 		}
 	} catch (error) {
 		console.error(error);
@@ -82,7 +83,7 @@ const serverConfig = {
 	serverInfo: {
 		name: 'rally-mcp',
 		version: '1.0.0',
-		icons: [{ src: './mcp.svg', sizes: ['64x64'], mimeType: 'src/assets/icon.png' }]
+		icons: [{ src: 'src/assets/icon.png', sizes: ['64x64'], mimeType: 'image/png' }]
 	},
 	capabilities: {
 		logging: {},
@@ -96,12 +97,12 @@ const serverConfig = {
 export let logLevel = 'info';
 
 export const mcpServer = new McpServer(serverConfig.serverInfo, {
-	capabilities: {},
+	capabilities: {...serverConfig.capabilities},
 	instructions: 'This is a MCP server for working with Broadcom Rally. Always respond in the same language as the user.',
 	debouncedNotificationMethods: ['notifications/tools/list_changed', 'notifications/resources/list_changed', 'notifications/prompts/list_changed']}
 );
 
-export let client = {capabilities: {}};
+export let client = {clientInfo: {name: 'unknown'}, capabilities: {}};
 
 export async function sendElicitRequest(elicitationProperties) {
 	if ('elicitation' in client.capabilities) {
@@ -148,7 +149,7 @@ mcpServer.server.setRequestHandler(InitializeRequestSchema, async request => {
 		return {
 			protocolVersion: serverConfig.protocolVersion,
 			serverInfo: serverConfig.serverInfo,
-			capabilities: serverConfig.capabilities
+			capabilities: mcpServer.server.getCapabilities()
 		};
 
 	} catch (error) {
@@ -214,11 +215,12 @@ async function startServer() {
 		rallyData.defaultProject = defaultProject;
 
 		await mcpServer.connect(new StdioServerTransport());
+		mcpServerInstance = mcpServer;
 		await new Promise(r => setTimeout(r, 400));
-		console.error('IBM MCP Rally server started successfully');
+		log('IBM Rally MCP server started successfully', 'info');
 
 	} catch (error) {
-		console.error('Error starting IBM MCP Rally server:', error );
+		log(`Error starting IBM MCP Rally server: ${error}`, 'error');
 		process.exit(1);
 	}
 }
