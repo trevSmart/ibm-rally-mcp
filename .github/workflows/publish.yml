@@ -36,33 +36,28 @@ jobs:
           LOG_LEVEL: info
         run: npm test
 
-      - name: Get current version from NPM and bump patch
+      - name: Update version to match release
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Get current version from NPM registry
-          CURRENT_VERSION=$(npm view ibm-rally-mcp version 2>/dev/null || echo "0.0.0")
-          echo "Current version on NPM: $CURRENT_VERSION"
+          # Get version from release tag (remove 'v' prefix if present)
+          RELEASE_VERSION="${{ github.event.release.tag_name }}"
+          if [[ $RELEASE_VERSION == v* ]]; then
+            RELEASE_VERSION="${RELEASE_VERSION#v}"
+          fi
 
-          # Extract major, minor, patch from current version
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+          echo "Release version: $RELEASE_VERSION"
 
-          # Increment patch version
-          NEW_PATCH=$((PATCH + 1))
-          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
-
-          echo "New version will be: $NEW_VERSION"
-
-          # Update package.json with new version
-          npm version $NEW_VERSION --no-git-tag-version
+          # Update package.json with release version
+          npm version $RELEASE_VERSION --no-git-tag-version
 
           # Update package-lock.json
           npm install --package-lock-only
 
           # Commit and push changes
           git add package.json package-lock.json
-          git commit -m "chore(release): bump version to $NEW_VERSION [skip ci]" || echo "No changes to commit"
+          git commit -m "chore(release): bump version to $RELEASE_VERSION [skip ci]" || echo "No changes to commit"
           git push
 
       - name: Build package
