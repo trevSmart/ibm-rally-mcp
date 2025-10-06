@@ -93,7 +93,7 @@ export async function updateTestCaseStep({ stepId, testCaseId, stepIndex, Input,
 			const stepResult = await rallyApi.query({
 				type: 'testcasestep',
 				fetch: ['ObjectID', 'StepIndex', 'Input', 'ExpectedResult', '_ref'],
-				query: queryUtils.where('TestCase', '=', testCase._ref).and('StepIndex', '=', stepIndex)
+				query: queryUtils.where('TestCase', '=', testCase._ref).and(queryUtils.where('StepIndex', '=', stepIndex))
 			});
 
 			if (!stepResult.Results || stepResult.Results.length === 0) {

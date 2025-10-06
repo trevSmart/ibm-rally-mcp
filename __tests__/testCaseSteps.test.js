@@ -10,7 +10,7 @@ jest.mock('../src/utils.js', () => ({
   getRallyApi: jest.fn(),
   queryUtils: {
     where: jest.fn((field, op, value) => ({
-      and: jest.fn((field2, op2, value2) => ({ field, op, value, field2, op2, value2 }))
+      and: jest.fn((otherQuery) => ({ field, op, value, andQuery: otherQuery }))
     }))
   }
 }));
