@@ -48,7 +48,7 @@ export async function log(data, level = logLevelInstance) {
 	}
 
 	try {
-		if (clientSupportsCapability('logging')) {
+		if (mcpServerInstance?.isConnected() && clientSupportsCapability('logging')) {
 			await mcpServerInstance.server.sendLoggingMessage({level: level, logger: 'MCP server', data});
 		}
 	} catch (error) {
@@ -60,6 +60,9 @@ export function clientSupportsCapability(capabilityName) {
 	if (!clientInstance) return false;
 
 	switch (capabilityName) {
+		case 'logging':
+			return clientInstance.capabilities.logging || clientInstance.clientInfo.name.toLowerCase().includes('visual studio code');
+
 		case 'resources':
 			return clientInstance.capabilities.resources;
 
