@@ -1,16 +1,17 @@
-import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+import { vi } from 'vitest';
+// Vitest globals are available without import
 
 // Mock del módulo index.js
-jest.mock('../index.js', () => ({
-  log: jest.fn()
+vi.mock('../index.js', () => ({
+  log: vi.fn()
 }));
 
 // Mock del módulo utils.js
-jest.mock('../src/utils.js', () => ({
-  getRallyApi: jest.fn(),
+vi.mock('../src/utils.js', () => ({
+  getRallyApi: vi.fn(),
   queryUtils: {
-    where: jest.fn((field, op, value) => ({
-      and: jest.fn((otherQuery) => ({ field, op, value, andQuery: otherQuery }))
+    where: vi.fn((field, op, value) => ({
+      and: vi.fn((otherQuery) => ({ field, op, value, andQuery: otherQuery }))
     }))
   }
 }));
@@ -23,11 +24,11 @@ describe('Test Case Step Management Tools', () => {
   let mockRallyApi;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockRallyApi = {
-      query: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn()
+      query: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn()
     };
     getRallyApi.mockReturnValue(mockRallyApi);
   });
@@ -124,7 +125,7 @@ describe('Test Case Step Management Tools', () => {
 
       expect(result.isError).toBeUndefined();
       expect(result.structuredContent.Step.StepIndex).toBe(2);
-      
+
       // Verify reordering happened (2 updates for steps 2 and 3)
       expect(mockRallyApi.update).toHaveBeenCalledTimes(2);
       expect(mockRallyApi.update).toHaveBeenCalledWith({

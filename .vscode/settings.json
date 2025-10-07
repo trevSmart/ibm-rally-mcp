@@ -32,5 +32,6 @@
 		"titleBar.inactiveBackground": "#00000099",
 		"titleBar.inactiveForeground": "#e7e7e799"
 	},
-	"peacock.color": "#000000"
-}
+	"vitest.enable": true,
+	"vitest.commandLine": "npm run test",
+	"vitest.include": ["**/__tests__/**/*.test.js", "**/?(*.)+(spec|test).js"],}

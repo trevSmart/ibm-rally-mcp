@@ -1,8 +1,9 @@
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { vi } from 'vitest';
+// Vitest globals are available without import
 
 // Mock the Rally API and queryUtils
-const mockQuery = jest.fn();
-const mockWhere = jest.fn((field, operator, value) => ({
+const mockQuery = vi.fn();
+const mockWhere = vi.fn((field, operator, value) => ({
 	field,
 	operator,
 	value,
@@ -19,8 +20,8 @@ const mockWhere = jest.fn((field, operator, value) => ({
 	}
 }));
 
-jest.mock('../src/utils.js', () => ({
-	getRallyApi: jest.fn(() => ({
+vi.mock('../src/utils.js', () => ({
+	getRallyApi: vi.fn(() => ({
 		query: mockQuery
 	})),
 	queryUtils: {
@@ -32,7 +33,7 @@ describe('getDefects', () => {
 	let getDefects;
 
 	beforeEach(async () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 		const module = await import('../src/tools/getDefects.js');
 		getDefects = module.getDefects;
 	});

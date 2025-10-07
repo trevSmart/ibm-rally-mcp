@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals';
+// Vitest globals are available without import
 
 // Skip this test file due to circular dependency issues
 describe.skip('Utils', () => {

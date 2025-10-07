@@ -21,13 +21,16 @@ npm run test:watch
 # Ejecutar tests con cobertura
 npm run test:coverage
 
+# Ejecutar tests con interfaz gráfica
+npm run test:ui
+
 # Ejecutar tests para CI/CD
 npm run test:ci
 ```
 
 ## Configuración
 
-Los tests están configurados con Jest y utilizan mocks para:
+Los tests están configurados con Vitest y utilizan mocks para:
 - El SDK de MCP
 - La librería ibm-rally-node
 - Las variables de entorno

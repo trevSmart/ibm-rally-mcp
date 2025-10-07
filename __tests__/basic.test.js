@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals';
+// Vitest globals are available without import
 
 describe('Basic Tests', () => {
   it('should pass basic test', () => {

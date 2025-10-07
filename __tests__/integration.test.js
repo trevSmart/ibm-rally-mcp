@@ -1,8 +1,9 @@
-import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+import { vi } from 'vitest';
+// Vitest globals are available without import
 
 describe('Integration Tests', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // Reset environment variables
     delete process.env.RALLY_APIKEY;
@@ -71,7 +72,7 @@ describe('Integration Tests', () => {
 
     it('should handle tool execution errors gracefully', async () => {
       // Mock a tool that throws an error
-      const mockTool = jest.fn().mockRejectedValue(new Error('Tool error'));
+      const mockTool = vi.fn().mockRejectedValue(new Error('Tool error'));
 
       try {
         await mockTool();
@@ -163,7 +164,7 @@ describe('Integration Tests', () => {
 
     it('should send resource list changed notifications', () => {
       // Test that we can create a mock notification function
-      const mockSendResourceListChanged = jest.fn();
+      const mockSendResourceListChanged = vi.fn();
 
       mockSendResourceListChanged();
 

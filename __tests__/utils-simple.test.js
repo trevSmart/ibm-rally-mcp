@@ -1,27 +1,29 @@
-import { describe, it, expect, jest } from '@jest/globals';
+import { vi } from 'vitest';
+// Vitest globals are available without import
 
 // Mock simple para evitar problemas de importación
-jest.mock('ibm-rally-node', () => ({
+const mockRally = {
   util: {
     query: {
-      where: jest.fn()
+      where: vi.fn()
     }
   },
-  default: jest.fn()
-}));
+  default: vi.fn()
+};
+
+vi.mock('ibm-rally-node', () => mockRally);
 
 describe('Utils Functions', () => {
   it('should create query where clause', () => {
-    const rally = require('ibm-rally-node');
-    const mockWhere = jest.fn((field, operator, value) => ({
+    const mockWhere = vi.fn((field, operator, value) => ({
       field,
       operator,
       value
     }));
 
-    rally.util.query.where = mockWhere;
+    mockRally.util.query.where = mockWhere;
 
-    const result = rally.util.query.where('Name', '=', 'Test');
+    const result = mockRally.util.query.where('Name', '=', 'Test');
 
     expect(result).toEqual({
       field: 'Name',
