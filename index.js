@@ -8,9 +8,9 @@ const redirectStdoutToStderr = (...args) => {
 	originalConsoleError(...args);
 };
 
-// console.log = redirectStdoutToStderr;
-// console.info = redirectStdoutToStderr;
-// console.debug = redirectStdoutToStderr;
+console.log = redirectStdoutToStderr;
+console.info = redirectStdoutToStderr;
+console.debug = redirectStdoutToStderr;
 
 dotenv.config();
 
