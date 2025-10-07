@@ -228,7 +228,7 @@ async function startServer() {
 		await mcpServer.connect(new StdioServerTransport());
 		mcpServerInstance = mcpServer;
 		await new Promise(r => setTimeout(r, 400));
-		log('IBM Rally MCP server started successfully', 'info');
+		log(`${serverConfig.serverInfo.name} v${serverConfig.serverInfo.version} started successfully`, 'info');
 
 	} catch (error) {
 		log(`Error starting IBM MCP Rally server: ${error}`, 'error');
