@@ -118,13 +118,15 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Restore publishConfig for GitHub Packages
+          # Configure package.json for GitHub Packages publication
           node -e "
             const fs = require('fs');
             const p = require('./package.json');
+            p.name = '@trevsmart/ibm-rally-mcp';
             p.publishConfig = { registry: 'https://npm.pkg.github.com' };
             fs.writeFileSync('package.json', JSON.stringify(p, null, 2) + '\n');
-            console.log('restored publishConfig for GitHub Packages');
+            console.log('configured package.json for GitHub Packages publication');
+            console.log('package name:', p.name);
           "
 
           npm publish
