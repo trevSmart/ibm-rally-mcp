@@ -25,14 +25,9 @@ import { getProjects } from '../../src/rallyServices.js';
 import { log } from '../../index.js';
 
 describe('Tools', () => {
-  let mockMcpServer;
 
   beforeEach(() => {
     vi.clearAllMocks();
-
-    // Get the mocked mcpServer
-    const { mcpServer } = require('../../index.js');
-    mockMcpServer = mcpServer;
   });
 
   describe('getCurrentDate', () => {
