@@ -49,16 +49,26 @@ jobs:
 
           echo "Release version: $RELEASE_VERSION"
 
-          # Update package.json with release version
-          npm version $RELEASE_VERSION --no-git-tag-version
+          # Update package.json with release version (only if different)
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          if [ "$CURRENT_VERSION" != "$RELEASE_VERSION" ]; then
+            echo "Updating version from $CURRENT_VERSION to $RELEASE_VERSION"
+            npm version $RELEASE_VERSION --no-git-tag-version
+          else
+            echo "Version $RELEASE_VERSION already matches current version $CURRENT_VERSION"
+          fi
 
           # Update package-lock.json
           npm install --package-lock-only
 
-          # Commit and push changes
+          # Commit and push changes (only if there are changes)
           git add package.json package-lock.json
-          git commit -m "chore(release): bump version to $RELEASE_VERSION [skip ci]" || echo "No changes to commit"
-          git push
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore(release): bump version to $RELEASE_VERSION [skip ci]"
+            git push
+          fi
 
       - name: Build package
         run: npm run build
