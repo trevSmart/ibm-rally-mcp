@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 
 import dotenv from 'dotenv';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+// Read package.json to get version dynamically
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packageJson = JSON.parse(readFileSync(join(__dirname, 'package.json'), 'utf8'));
 
 // Ensure any library that relies on console.log/info/debug writes to stderr so MCP JSON stays on stdout
 const originalConsoleError = console.error.bind(console);
@@ -92,8 +100,8 @@ export function clientSupportsCapability(capabilityName) {
 const serverConfig = {
 	protocolVersion: '2025-06-18',
 	serverInfo: {
-		name: 'rally-mcp',
-		version: '1.0.0',
+		name: 'IBM Rally MCP server',
+		version: packageJson.version,
 		icons: [{ src: 'src/assets/icon.png', sizes: ['64x64'], mimeType: 'image/png' }]
 	},
 	capabilities: {
