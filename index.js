@@ -236,4 +236,7 @@ async function startServer() {
 	}
 }
 
-startServer();
+// Only start server if not running tests
+if (process.env.NODE_ENV !== 'test' && !process.env.VITEST) {
+	startServer();
+}
