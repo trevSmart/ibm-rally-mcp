@@ -72,7 +72,7 @@ export async function log(data, level = logLevelInstance) {
 			await mcpServerInstance.server.sendLoggingMessage({level, logger: 'MCP server', data});
 		}
 	} catch (error) {
-		console.error(error);
+		log(error, 'error');
 	}
 }
 
@@ -172,7 +172,7 @@ mcpServer.server.setRequestHandler(InitializeRequestSchema, async request => {
 		};
 
 	} catch (error) {
-		console.error(`Error initializing server: ${error.message}` );
+		log(`Error initializing server: ${error.message}` , 'error');
 		throw error;
 	}
 });
@@ -206,14 +206,14 @@ async function startServer() {
 			throw new Error(`Error obtenint projecte per defecte: No s'han trobat projectes amb el nom ${process.env.RALLY_PROJECT_NAME}`);
 		}
 		const defaultProject = getProjectsResult.projects[0];
-		console.error(`Projecte per defecte: ${JSON.stringify(defaultProject, null, 3)}`);
+		log(`Projecte per defecte: ${JSON.stringify(defaultProject, null, 3)}`, 'info');
 
 		const getUserStoriesResult = await getUserStories({Project: `/project/${defaultProject.ObjectID}`, Owner: 'currentuser'}, 1);
-		console.error(`User stories: ${JSON.stringify(getUserStoriesResult, null, 3)}`);
+		log(`User stories: ${JSON.stringify(getUserStoriesResult, null, 3)}`, 'debug');
 		const owner = getUserStoriesResult.userStories[0].Owner;
-		console.error(`Owner: ${owner}`);
+		log(`Owner: ${owner}`, 'log');
 		const getUsersResult = await getUsers({DisplayName: owner}, 1);
-		console.error(`Users: ${JSON.stringify(getUsersResult, null, 3)}`);
+		log(`Users: ${JSON.stringify(getUsersResult, null, 3)}`, 'log');
 		rallyData.currentUser = getUsersResult.users[0];
 
 		mcpServer.registerResource('rallyData', 'mcp://data/all.json', {
