@@ -1,6 +1,6 @@
 {
 	"name": "ibm-rally-mcp",
-	"version": "1.0.16",
+	"version": "1.0.17",
 	"description": "Servidor MCP lleuger per accedir a les dades de Broadcom Rally",
 	"keywords": [
 		"mcp",
