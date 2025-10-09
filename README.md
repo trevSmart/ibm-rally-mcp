@@ -185,6 +185,46 @@ Els workflows de CI i publicació ja estan configurats per utilitzar aquestes va
 - Les respostes de certes tools poden contenir molta informació; utilitza filtres (`query`) per limitar el volum retornat.
 - El filtratge de test cases només accepta camps específics (`Iteration`, `Project`, `Owner`, `State`, `TestFolder`).
 
+## Troubleshooting
+
+### Error: Cannot find module 'index.js'
+
+Aquest error apareix quan el client MCP intenta executar el servidor amb una ruta absoluta incorrecta. Assegura't de:
+
+1. Instal·lar el paquet globalment: `npm install -g ibm-rally-context`
+2. Utilitzar la comanda `ibm-rally-context` a la configuració del client MCP, NO una ruta absoluta
+3. Verificar que la comanda està disponible: `which ibm-rally-context` (macOS/Linux) o `where ibm-rally-context` (Windows)
+
+**Exemple de configuració incorrecta**:
+```json
+{
+  "mcpServers": {
+    "ibm-rally-context": {
+      "command": "node /Users/username/Documents/project/ibm-rally-mcp/index.js"  // ❌ MAL
+    }
+  }
+}
+```
+
+**Exemple de configuració correcta**:
+```json
+{
+  "mcpServers": {
+    "ibm-rally-context": {
+      "command": "ibm-rally-context"  // ✅ BÉ
+    }
+  }
+}
+```
+
+### El servidor no inicia o dona errors de connexió
+
+1. Verifica que les variables d'entorn estan configurades correctament al fitxer de configuració del client MCP
+2. Comprova que la teva `RALLY_APIKEY` és vàlida
+3. Assegura't que `RALLY_PROJECT_NAME` coincideix exactament amb el nom del projecte a Rally
+4. Revisa els logs del client MCP per veure errors específics
+
+
 ## Notas sobre filtres
 
 - **ObjectID**: Quan filtres per `ObjectID` a `getDefects` o altres tools, el valor es converteix automàticament de string a número per garantir la compatibilitat amb l'API de Rally. Això assegura que el filtratge exacte funcioni correctament.
