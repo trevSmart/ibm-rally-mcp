@@ -227,7 +227,7 @@ export async function getUserStories(query = {}, limit = null) {
 
 		const queryOptions = {
 			type: 'hierarchicalrequirement',
-			fetch: ['FormattedID', 'Name', 'Description', 'Iteration', 'Blocked', 'TaskEstimateTotal', 'ToDo', 'Owner', 'State', 'PlanEstimate', 'TaskStatus', 'Tasks', 'TestCases', 'Defects', 'Discussion', 'ObjectID', 'c_Appgar'],
+			fetch: ['FormattedID', 'Name', 'Description', 'Notes', 'Iteration', 'Blocked', 'TaskEstimateTotal', 'ToDo', 'Owner', 'State', 'PlanEstimate', 'TaskStatus', 'Tasks', 'TestCases', 'Defects', 'Discussion', 'ObjectID', 'c_Appgar'],
 		};
 
 		if (limit) {
@@ -289,6 +289,9 @@ export async function getUserStories(query = {}, limit = null) {
 			Description: typeof userStory.Description === 'string'
 				? sanitizeHtml(userStory.Description, { allowedTags: [], allowedAttributes: {} })
 				: userStory.Description,
+			Notes: typeof userStory.Notes === 'string'
+				? sanitizeHtml(userStory.Notes, { allowedTags: [], allowedAttributes: {} })
+				: userStory.Notes,
 			State: userStory.State,
 			PlanEstimate: userStory.PlanEstimate,
 			ToDo: userStory.ToDo,
