@@ -16,6 +16,7 @@ Aquesta secció descriu totes les tools MCP disponibles al servidor. Cada agent 
 ### getUserStories
 - **Fitxer**: `src/tools/getUserStories.js`
 - **Objectiu**: Obtenir user stories segons els filtres indicats (qualsevol camp suportat per l'API). Recomanat filtrar per `Iteration.ObjectID`, `Project`, `State`.
+- **Camps retornats**: Inclou tots els camps estàndard de user story, incloent `Notes` que conté informació crítica com codis d'iniciativa (format: I#####) i feature (format: FE######).
 
 ### getTasks
 - **Fitxer**: `src/tools/getTasks.js`
@@ -71,6 +72,11 @@ Aquesta secció descriu totes les tools MCP disponibles al servidor. Cada agent 
 ### createTestCase
 - **Fitxer**: `src/tools/createTestCase.js`
 - **Objectiu**: Crear un test case (i opcionalment els seus passos). Necessita `Name`, `UserStory`, `Project`, `Owner`, `Steps[]`. Valida i envia la creació en dues fases: test case i batch de passos.
+
+### createTestFolder
+- **Fitxer**: `src/tools/createTestFolder.js`
+- **Objectiu**: Crear una carpeta de test (test folder) per organitzar test cases de manera jeràrquica. Camps mínims: `Name`, `Project`. Opcionalment `Description`, `Parent` (per crear jerarquies) i `Owner`.
+- **Ús**: Permet crear estructures jeràrquiques de carpetes especificant el `Parent` (referència a `/testfolder/###`). Si no s'especifica `Parent`, es crea al nivell arrel.
 
 ## Notes operatives
 

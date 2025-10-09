@@ -43,6 +43,7 @@ import {updateDefect, updateDefectToolDefinition} from './src/tools/updateDefect
 import {createTestCase, createTestCaseTool} from './src/tools/createTestCase.js';
 import {getUsersToolDefinition, getUsersTool} from './src/tools/getUsers.js';
 import {getTestFolders, getTestFoldersTool} from './src/tools/getTestFolders.js';
+import {createTestFolder, createTestFolderTool} from './src/tools/createTestFolder.js';
 import {getTestCaseSteps, getTestCaseStepsTool} from './src/tools/getTestCaseSteps.js';
 import {createTestCaseStep, createTestCaseStepTool} from './src/tools/createTestCaseStep.js';
 import {updateTestCaseStep, updateTestCaseStepTool} from './src/tools/updateTestCaseStep.js';
@@ -193,6 +194,7 @@ mcpServer.registerTool('updateDefect', updateDefectToolDefinition, updateDefect)
 mcpServer.registerTool('createTestCase', createTestCaseTool, createTestCase);
 mcpServer.registerTool('getUsers', getUsersToolDefinition, getUsersTool);
 mcpServer.registerTool('getTestFolders', getTestFoldersTool, getTestFolders);
+mcpServer.registerTool('createTestFolder', createTestFolderTool, createTestFolder);
 mcpServer.registerTool('getTestCaseSteps', getTestCaseStepsTool, getTestCaseSteps);
 mcpServer.registerTool('createTestCaseStep', createTestCaseStepTool, createTestCaseStep);
 mcpServer.registerTool('updateTestCaseStep', updateTestCaseStepTool, updateTestCaseStep);
