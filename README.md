@@ -1,4 +1,4 @@
-# MCP Rally Server
+# IBM Rally Context
 
 Servidor MCP que exposa dades de Broadcom Rally a través del Model Context Protocol. Proporciona un conjunt de tools per consultar o modificar artefactes de Rally (projectes, iteracions, user stories, test cases, etc.) des d'agents compatibles amb MCP.
 
@@ -13,15 +13,15 @@ Servidor MCP que exposa dades de Broadcom Rally a través del Model Context Prot
 ### Des de npm (recomanat)
 
 ```bash
-npm install -g ibm-rally-mcp
+npm install -g ibm-rally-context
 ```
 
 ### Des del codi font
 
 1. Clona el repositori:
    ```bash
-   git clone https://github.com/trevSmart/ibm-rally-mcp.git
-   cd ibm-rally-mcp
+   git clone https://github.com/trevSmart/ibm-rally-context.git
+   cd ibm-rally-context
    ```
 
 2. Instal·la les dependències:
@@ -49,7 +49,7 @@ npm install -g ibm-rally-mcp
 2. Inicia el servidor MCP:
    ```bash
    # Si l'has instal·lat globalment des de npm:
-   ibm-rally-mcp
+   ibm-rally-context
 
    # Si l'has instal·lat des del codi font:
    npm start

@@ -1,6 +1,6 @@
-# Agents registrats
+# IBM Rally Context - Agents registrats
 
-Aquesta secció descriu totes les tools MCP disponibles al servidor. Cada agent és una acció que el client MCP pot sol·licitar i que encapsula una operació concreta sobre Broadcom Rally.
+Aquesta secció descriu totes les tools MCP disponibles al servidor IBM Rally Context. Cada agent és una acció que el client MCP pot sol·licitar i que encapsula una operació concreta sobre Broadcom Rally.
 
 ## Consultes
 
