@@ -21,7 +21,7 @@ export async function createTestCase({ testCase }) {
             throw new Error('Test case is missing required field: WorkProduct (or UserStory for backward compatibility)');
         }
 
-        //Validate that WorkProduct is a valid Rally object reference (User Story or Defect)
+        // Validate that WorkProduct is a valid Rally object reference (User Story or Defect)
         if (!workProduct.startsWith('/hierarchicalrequirement/') && !workProduct.startsWith('/defect/')) {
             throw new Error('Invalid WorkProduct reference. Must start with /hierarchicalrequirement/ or /defect/');
         }
