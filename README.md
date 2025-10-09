@@ -56,6 +56,55 @@ npm install -g ibm-rally-context
    ```
 3. Connecta el teu client MCP (per exemple Cursor, Claude Desktop o scripts propis) utilitzant el transport STDIO.
 
+### Configuració per Claude Desktop
+
+Afegeix la següent configuració al fitxer de configuració de Claude Desktop:
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "ibm-rally-context": {
+      "command": "ibm-rally-context",
+      "env": {
+        "RALLY_INSTANCE": "https://eu1.rallydev.com",
+        "RALLY_APIKEY": "pat-xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "RALLY_PROJECT_NAME": "Nom del projecte per defecte",
+        "LOG_LEVEL": "info"
+      }
+    }
+  }
+}
+```
+
+### Configuració per Cursor
+
+Afegeix la següent configuració al fitxer de configuració de Cursor:
+
+**macOS**: `~/Library/Application Support/Cursor/User/globalStorage/rooveterinaryinc.roo-cline/settings/cline_mcp_settings.json`
+**Windows**: `%APPDATA%\Cursor\User\globalStorage\rooveterinaryinc.roo-cline\settings\cline_mcp_settings.json`
+
+```json
+{
+  "mcpServers": {
+    "ibm-rally-context": {
+      "command": "ibm-rally-context",
+      "env": {
+        "RALLY_INSTANCE": "https://eu1.rallydev.com",
+        "RALLY_APIKEY": "pat-xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "RALLY_PROJECT_NAME": "Nom del projecte per defecte",
+        "LOG_LEVEL": "info"
+      }
+    }
+  }
+}
+```
+
+> **Nota Important**: Quan instal·les el paquet globalment amb `npm install -g ibm-rally-context`, la comanda `ibm-rally-context` estarà disponible al PATH del sistema. No utilitzis rutes absolutes com `/Users/username/Documents/...` a la configuració del client MCP.
+
+
 ## Estructura principal
 
 - `index.js`: punt d'entrada del servidor MCP, registra totes les tools, prompts i recursos.

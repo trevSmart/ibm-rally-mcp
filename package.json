@@ -1,5 +1,5 @@
 {
-	"name": "ibm-rally-mcp",
+	"name": "ibm-rally-context",
 	"version": "1.0.18",
 	"description": "Servidor MCP lleuger per accedir a les dades de Broadcom Rally",
 	"keywords": [
@@ -14,7 +14,7 @@
 	],
 	"main": "index.js",
 	"bin": {
-		"ibm-rally-mcp": "index.js"
+		"ibm-rally-context": "index.js"
 	},
 	"type": "module",
 	"files": [
@@ -38,12 +38,12 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/trevSmart/ibm-rally-mcp.git"
+		"url": "git+https://github.com/trevSmart/ibm-rally-context.git"
 	},
 	"bugs": {
-		"url": "https://github.com/trevSmart/ibm-rally-mcp/issues"
+		"url": "https://github.com/trevSmart/ibm-rally-context/issues"
 	},
-	"homepage": "https://github.com/trevSmart/ibm-rally-mcp",
+	"homepage": "https://github.com/trevSmart/ibm-rally-context",
 	"author": "trevSmart",
 	"license": "MIT",
 	"dependencies": {
