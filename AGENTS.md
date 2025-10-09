@@ -71,7 +71,7 @@ Aquesta secció descriu totes les tools MCP disponibles al servidor IBM Rally Co
 
 ### createTestCase
 - **Fitxer**: `src/tools/createTestCase.js`
-- **Objectiu**: Crear un test case (i opcionalment els seus passos). Necessita `Name`, `UserStory`, `Project`, `Owner`, `Steps[]`. Valida i envia la creació en dues fases: test case i batch de passos.
+- **Objectiu**: Crear un test case (i opcionalment els seus passos). Necessita `Name`, `WorkProduct` (o `UserStory` per compatibilitat), `Project`, `Owner`, `TestFolder`, `Steps[]`. El camp `WorkProduct` accepta tant user stories (`/hierarchicalrequirement/###`) com defectes (`/defect/###`). Valida i envia la creació en dues fases: test case i batch de passos.
 
 ### createTestFolder
 - **Fitxer**: `src/tools/createTestFolder.js`
