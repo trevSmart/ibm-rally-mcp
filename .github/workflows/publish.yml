@@ -42,7 +42,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           # Get current version from NPM registry
-          CURRENT_VERSION=$(npm view ibm-rally-mcp version 2>/dev/null || echo "0.0.0")
+          CURRENT_VERSION=$(npm view ibm-rally-context version 2>/dev/null || echo "0.0.0")
           echo "Current version on NPM: $CURRENT_VERSION"
 
           # Extract major, minor, patch from current version
@@ -92,7 +92,7 @@ jobs:
             const fs = require('fs');
             const p = require('./package.json');
             const orig = p.name;
-            p.name = 'ibm-rally-mcp';
+            p.name = 'ibm-rally-context';
             delete p.publishConfig;
             fs.writeFileSync('package.json', JSON.stringify(p, null, 2) + '\n');
             console.log('renamed', orig, '->', p.name);
@@ -122,7 +122,7 @@ jobs:
           node -e "
             const fs = require('fs');
             const p = require('./package.json');
-            p.name = '@trevsmart/ibm-rally-mcp';
+            p.name = '@trevsmart/ibm-rally-context';
             p.publishConfig = { registry: 'https://npm.pkg.github.com' };
             fs.writeFileSync('package.json', JSON.stringify(p, null, 2) + '\n');
             console.log('configured package.json for GitHub Packages publication');
