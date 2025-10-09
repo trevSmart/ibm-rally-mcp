@@ -1,6 +1,6 @@
 {
 	"name": "ibm-rally-context",
-	"version": "0.0.10",
+	"version": "0.0.1",
 	"description": "Servidor MCP lleuger per accedir a les dades de Broadcom Rally",
 	"keywords": [
 		"mcp",
