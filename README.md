@@ -56,6 +56,55 @@ npm install -g ibm-rally-context
    ```
 3. Connecta el teu client MCP (per exemple Cursor, Claude Desktop o scripts propis) utilitzant el transport STDIO.
 
+### Configuració per Claude Desktop
+
+Afegeix la següent configuració al fitxer de configuració de Claude Desktop:
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "ibm-rally-context": {
+      "command": "ibm-rally-context",
+      "env": {
+        "RALLY_INSTANCE": "https://eu1.rallydev.com",
+        "RALLY_APIKEY": "pat-xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "RALLY_PROJECT_NAME": "Nom del projecte per defecte",
+        "LOG_LEVEL": "info"
+      }
+    }
+  }
+}
+```
+
+### Configuració per Cursor
+
+Afegeix la següent configuració al fitxer de configuració de Cursor:
+
+**macOS**: `~/Library/Application Support/Cursor/User/globalStorage/rooveterinaryinc.roo-cline/settings/cline_mcp_settings.json`
+**Windows**: `%APPDATA%\Cursor\User\globalStorage\rooveterinaryinc.roo-cline\settings\cline_mcp_settings.json`
+
+```json
+{
+  "mcpServers": {
+    "ibm-rally-context": {
+      "command": "ibm-rally-context",
+      "env": {
+        "RALLY_INSTANCE": "https://eu1.rallydev.com",
+        "RALLY_APIKEY": "pat-xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "RALLY_PROJECT_NAME": "Nom del projecte per defecte",
+        "LOG_LEVEL": "info"
+      }
+    }
+  }
+}
+```
+
+> **Nota Important**: Quan instal·les el paquet globalment amb `npm install -g ibm-rally-context`, la comanda `ibm-rally-context` estarà disponible al PATH del sistema. No utilitzis rutes absolutes com `/Users/username/Documents/...` a la configuració del client MCP.
+
+
 ## Estructura principal
 
 - `index.js`: punt d'entrada del servidor MCP, registra totes les tools, prompts i recursos.
@@ -135,6 +184,46 @@ Els workflows de CI i publicació ja estan configurats per utilitzar aquestes va
 
 - Les respostes de certes tools poden contenir molta informació; utilitza filtres (`query`) per limitar el volum retornat.
 - El filtratge de test cases només accepta camps específics (`Iteration`, `Project`, `Owner`, `State`, `TestFolder`).
+
+## Troubleshooting
+
+### Error: Cannot find module 'index.js'
+
+Aquest error apareix quan el client MCP intenta executar el servidor amb una ruta absoluta incorrecta. Assegura't de:
+
+1. Instal·lar el paquet globalment: `npm install -g ibm-rally-context`
+2. Utilitzar la comanda `ibm-rally-context` a la configuració del client MCP, NO una ruta absoluta
+3. Verificar que la comanda està disponible: `which ibm-rally-context` (macOS/Linux) o `where ibm-rally-context` (Windows)
+
+**Exemple de configuració incorrecta**:
+```json
+{
+  "mcpServers": {
+    "ibm-rally-context": {
+      "command": "node /Users/username/Documents/project/ibm-rally-mcp/index.js"  // ❌ MAL
+    }
+  }
+}
+```
+
+**Exemple de configuració correcta**:
+```json
+{
+  "mcpServers": {
+    "ibm-rally-context": {
+      "command": "ibm-rally-context"  // ✅ BÉ
+    }
+  }
+}
+```
+
+### El servidor no inicia o dona errors de connexió
+
+1. Verifica que les variables d'entorn estan configurades correctament al fitxer de configuració del client MCP
+2. Comprova que la teva `RALLY_APIKEY` és vàlida
+3. Assegura't que `RALLY_PROJECT_NAME` coincideix exactament amb el nom del projecte a Rally
+4. Revisa els logs del client MCP per veure errors específics
+
 
 ## Notas sobre filtres
 
