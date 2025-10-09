@@ -5,17 +5,25 @@ import { z } from 'zod';
 
 export async function createTestCase({ testCase }) {
     try {
+        // Support both WorkProduct and UserStory for backward compatibility
+        const workProduct = testCase.WorkProduct || testCase.UserStory;
+        
         //Validate required fields
-        const requiredFields = ['Name', 'UserStory', 'Project', 'TestFolder'];
+        const requiredFields = ['Name', 'Project', 'TestFolder'];
         const missingFields = requiredFields.filter(field => !testCase[field]);
 
         if (missingFields.length) {
             throw new Error(`Test case is missing required fields: ${missingFields.join(', ')}`);
         }
 
-        //Validate that UserStory is a valid Rally object reference
-        if (!testCase.UserStory.startsWith('/hierarchicalrequirement/')) {
-            throw new Error('Invalid UserStory reference. Must start with /hierarchicalrequirement/');
+        // Validate that WorkProduct is provided
+        if (!workProduct) {
+            throw new Error('Test case is missing required field: WorkProduct (or UserStory for backward compatibility)');
+        }
+
+        //Validate that WorkProduct is a valid Rally object reference (User Story or Defect)
+        if (!workProduct.startsWith('/hierarchicalrequirement/') && !workProduct.startsWith('/defect/')) {
+            throw new Error('Invalid WorkProduct reference. Must start with /hierarchicalrequirement/ or /defect/');
         }
 
         //Validate that Steps is an array and has at least one step
@@ -38,7 +46,7 @@ export async function createTestCase({ testCase }) {
         const testCaseData = {
             Name: testCase.Name,
             Description: testCase.Description || '',
-            WorkProduct: testCase.UserStory, //Link to the user story
+            WorkProduct: workProduct, //Link to the user story or defect
             Project: testCase.Project || rallyData.defaultProject.ObjectID,
             Iteration: testCase.Iteration,
             Owner: testCase.Owner,
@@ -137,7 +145,7 @@ export async function createTestCase({ testCase }) {
 export const createTestCaseTool = {
     name: 'createTestCase',
     title: 'Create Test Case',
-    description: 'This tool creates a new test case for a user story with N steps.',
+    description: 'This tool creates a new test case for a user story or defect with N steps.',
     inputSchema: {
         testCase: z
             .object({
@@ -146,8 +154,12 @@ export const createTestCaseTool = {
                 Description: z.string()
                     .optional()
                     .describe('The description of the test case. Example: "Test case to verify user login functionality"'),
+                WorkProduct: z.string()
+                    .optional()
+                    .describe('The work product ObjectID to associate the test case with. Can be a user story (/hierarchicalrequirement/12345) or a defect (/defect/12345). If not provided, UserStory field will be used for backward compatibility.'),
                 UserStory: z.string()
-                    .describe('The user story ObjectID to associate the test case with. Example: /hierarchicalrequirement/12345'),
+                    .optional()
+                    .describe('(DEPRECATED: Use WorkProduct instead) The user story ObjectID to associate the test case with. Example: /hierarchicalrequirement/12345'),
                 Project: z.string()
                     .describe('The project ObjectID to associate the test case with. Example: /project/12345'),
                 Iteration: z.string()
@@ -165,6 +177,6 @@ export const createTestCaseTool = {
                     .optional()
                     .describe('An array of test case steps. Each step must have Input and ExpectedResult.')
             })
-            .describe('The test case data to create. Must include Name, UserStory and Owner.')
+            .describe('The test case data to create. Must include Name, WorkProduct (or UserStory), Project, Owner, and TestFolder.')
     }
 };
