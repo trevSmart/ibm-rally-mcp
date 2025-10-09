@@ -8,7 +8,7 @@ export async function createTestCase({ testCase }) {
         // Support both WorkProduct and UserStory for backward compatibility
         const workProduct = testCase.WorkProduct || testCase.UserStory;
         
-        //Validate required fields
+        // Validate required fields
         const requiredFields = ['Name', 'Project', 'TestFolder'];
         const missingFields = requiredFields.filter(field => !testCase[field]);
 
