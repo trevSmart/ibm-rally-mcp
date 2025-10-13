@@ -52,7 +52,7 @@
 		"ibm-rally-node": "^0.0.15",
 		"node-fetch": "^3.3.2",
 		"sanitize-html": "^2.17.0",
-		"zod": "^3.25.76"
+		"zod": "^4.1.12"
 	},
 	"engines": {
 		"node": ">=22.7.5"
